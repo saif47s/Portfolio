@@ -3,12 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Shield } from "lucide-react";
 import { motion } from "framer-motion";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const navItems = [
   { href: "#home", label: "Home" },
   { href: "#skills", label: "Skills" },
   { href: "#projects", label: "Projects" },
   { href: "#about", label: "About" },
+  { href: "#experience", label: "Experience" },
+  { href: "#blog", label: "Blog" },
   { href: "#contact", label: "Contact" },
 ];
 
@@ -77,6 +80,7 @@ export default function Navigation() {
                   {item.label}
                 </button>
               ))}
+              <ThemeToggle />
             </div>
           </div>
 

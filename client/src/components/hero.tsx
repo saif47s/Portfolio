@@ -22,8 +22,13 @@ export default function Hero() {
           className="mb-8"
         >
           <div className="w-48 h-48 mx-auto rounded-full bg-gradient-to-r from-cyber-blue to-cyber-green p-1 mb-8">
-            <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
-              <Shield className="h-24 w-24 text-cyber-blue" />
+            <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center overflow-hidden">
+              {/* Replace this with your actual photo */}
+              <img 
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400" 
+                alt="Saif - Tech Expert" 
+                className="w-full h-full object-cover rounded-full"
+              />
             </div>
           </div>
         </motion.div>
@@ -55,7 +60,19 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
         >
-          <Button className="bg-gradient-cyber-primary hover:opacity-90 text-white font-semibold py-3 px-8">
+          <Button 
+            className="bg-gradient-cyber-primary hover:opacity-90 text-white font-semibold py-3 px-8"
+            onClick={() => {
+              // Create a sample resume download
+              const resumeUrl = "/resume-saif-tech-expert.pdf";
+              const link = document.createElement('a');
+              link.href = resumeUrl;
+              link.download = "Saif-Tech-Expert-Resume.pdf";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+          >
             <Download className="mr-2 h-4 w-4" />
             Download Resume
           </Button>
@@ -75,13 +92,31 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.8 }}
           className="flex justify-center space-x-6"
         >
-          <a href="#" className="text-gray-400 hover:text-cyber-blue text-2xl transition-colors">
+          <a 
+            href="https://linkedin.com/in/saif-expert" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-cyber-blue text-2xl transition-colors"
+            aria-label="LinkedIn Profile"
+          >
             <Linkedin />
           </a>
-          <a href="#" className="text-gray-400 hover:text-cyber-green text-2xl transition-colors">
+          <a 
+            href="https://github.com/saif-expert" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-cyber-green text-2xl transition-colors"
+            aria-label="GitHub Profile"
+          >
             <Github />
           </a>
-          <a href="#" className="text-gray-400 hover:text-cyber-purple text-2xl transition-colors">
+          <a 
+            href="https://twitter.com/saif_expert" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-cyber-purple text-2xl transition-colors"
+            aria-label="Twitter Profile"
+          >
             <Twitter />
           </a>
         </motion.div>
