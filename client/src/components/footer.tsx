@@ -1,0 +1,109 @@
+import { Shield, Linkedin, Github, Twitter } from "lucide-react";
+import { SiMedium } from "react-icons/si";
+
+const services = [
+  "Penetration Testing",
+  "Security Assessment", 
+  "Incident Response",
+  "Security Consulting"
+];
+
+const quickLinks = [
+  { name: "Home", href: "#home" },
+  { name: "Skills", href: "#skills" },
+  { name: "Projects", href: "#projects" },
+  { name: "Contact", href: "#contact" }
+];
+
+export default function Footer() {
+  const scrollToSection = (href: string) => {
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <footer className="bg-cyber-dark py-12 border-t border-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="col-span-1 md:col-span-2">
+            <div className="flex items-center mb-4">
+              <Shield className="h-8 w-8 text-cyber-blue mr-2" />
+              <span className="text-2xl font-bold text-cyber-blue">CyberSec</span>
+              <span className="text-gray-400 ml-2">Professional</span>
+            </div>
+            <p className="text-gray-400 mb-6 max-w-md">
+              Protecting your digital future with cutting-edge cybersecurity solutions and expertise.
+            </p>
+            <div className="flex space-x-4">
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-cyber-blue transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="h-6 w-6" />
+              </a>
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-cyber-green transition-colors"
+                aria-label="GitHub"
+              >
+                <Github className="h-6 w-6" />
+              </a>
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-cyber-purple transition-colors"
+                aria-label="Twitter"
+              >
+                <Twitter className="h-6 w-6" />
+              </a>
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-cyber-yellow transition-colors"
+                aria-label="Medium"
+              >
+                <SiMedium className="h-6 w-6" />
+              </a>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-white font-semibold mb-4">Services</h4>
+            <ul className="space-y-2 text-gray-400">
+              {services.map((service) => (
+                <li key={service}>
+                  <a href="#" className="hover:text-cyber-blue transition-colors">
+                    {service}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="text-white font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2 text-gray-400">
+              {quickLinks.map((link) => (
+                <li key={link.name}>
+                  <button 
+                    onClick={() => scrollToSection(link.href)}
+                    className="hover:text-cyber-blue transition-colors text-left"
+                  >
+                    {link.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
+          <p className="text-gray-400">
+            &copy; 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
