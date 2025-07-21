@@ -1,8 +1,8 @@
-# Cybersecurity Portfolio Website
+# Saif's Multi-Tech Portfolio Website
 
 ## Overview
 
-This is a modern, full-stack cybersecurity portfolio website built with React and Express. The application showcases cybersecurity expertise through an interactive portfolio featuring skills, projects, testimonials, and a contact form. It's designed as a professional showcase for cybersecurity professionals to display their capabilities and connect with potential clients.
+This is a modern, full-stack portfolio website built with React and Express showcasing Saif's comprehensive expertise across multiple technology domains. The application features cybersecurity, cloud engineering, AI prompting, data analysis, UI/UX design, network engineering, Python development, mobile development, and more. It's designed as a professional showcase for a multi-disciplinary technology expert to display capabilities and connect with potential collaborators and clients.
 
 ## User Preferences
 

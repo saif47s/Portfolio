@@ -15,25 +15,25 @@ const contactInfo = [
   {
     icon: Mail,
     title: "Email",
-    info: "security@cyberpro.com",
+    info: "xiaomidanger@gmail.com",
     gradient: "from-cyber-blue to-cyber-purple"
   },
   {
     icon: Phone,
     title: "Phone",
-    info: "+1 (555) 123-4567",
+    info: "Available on Request",
     gradient: "from-cyber-green to-emerald-600"
   },
   {
     icon: MapPin,
     title: "Location",
-    info: "San Francisco, CA",
+    info: "Remote Worldwide",
     gradient: "from-cyber-purple to-purple-600"
   },
   {
     icon: Clock,
     title: "Availability",
-    info: "24/7 Emergency Response",
+    info: "24/7 Project Support",
     gradient: "from-yellow-500 to-orange-500"
   }
 ];
@@ -105,7 +105,7 @@ export default function Contact() {
         >
           <h2 className="text-4xl font-bold text-white mb-4">Get In Touch</h2>
           <p className="text-xl text-gray-400">
-            Ready to secure your digital assets? Let's discuss your cybersecurity needs.
+            Ready to collaborate on tech projects? Let's discuss your requirements across cybersecurity, cloud engineering, development, and more.
           </p>
         </motion.div>
         
@@ -191,11 +191,17 @@ export default function Contact() {
                         <SelectValue placeholder="Select a service..." />
                       </SelectTrigger>
                       <SelectContent className="bg-cyber-secondary border-gray-600">
-                        <SelectItem value="penetration-testing">Penetration Testing</SelectItem>
-                        <SelectItem value="security-assessment">Security Assessment</SelectItem>
-                        <SelectItem value="incident-response">Incident Response</SelectItem>
-                        <SelectItem value="security-consulting">Security Consulting</SelectItem>
-                        <SelectItem value="training-awareness">Training & Awareness</SelectItem>
+                        <SelectItem value="cybersecurity">Cybersecurity Services</SelectItem>
+                        <SelectItem value="cloud-engineering">Cloud Engineering</SelectItem>
+                        <SelectItem value="network-engineering">Network Engineering</SelectItem>
+                        <SelectItem value="uiux-design">UI/UX Design</SelectItem>
+                        <SelectItem value="data-analysis">Data Analysis & Visualization</SelectItem>
+                        <SelectItem value="ai-prompting">AI Prompting & Automation</SelectItem>
+                        <SelectItem value="mobile-development">Mobile App Development</SelectItem>
+                        <SelectItem value="python-development">Python Development</SelectItem>
+                        <SelectItem value="seo-optimization">SEO & Business IT</SelectItem>
+                        <SelectItem value="database-management">Database Management</SelectItem>
+                        <SelectItem value="it-support">IT Support & Consultation</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

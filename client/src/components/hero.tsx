@@ -34,9 +34,9 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
         >
-          <span className="text-white">Cybersecurity</span>{" "}
+          <span className="text-white">Saif - Multi-Tech</span>{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyber-blue to-cyber-green">
-            Professional
+            Expert
           </span>
         </motion.h1>
         
@@ -46,7 +46,7 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-xl sm:text-2xl text-gray-300 mb-8 leading-relaxed"
         >
-          Protecting digital assets through advanced network security, penetration testing, and threat analysis
+          Certified Expert in Cybersecurity | Network Engineering | Cloud Engineering | UI/UX Design | AI Prompting | Data Analysis | Python Development | Mobile Apps
         </motion.p>
         
         <motion.div 

@@ -11,26 +11,26 @@ const stats = [
 
 const certifications = [
   {
-    name: "CISSP",
-    description: "Certified Information Systems Security Professional",
-    icon: Tag,
+    name: "Cybersecurity",
+    description: "Certified Cybersecurity Expert",
+    icon: Shield,
     color: "text-cyber-blue"
   },
   {
-    name: "CEH",
-    description: "Certified Ethical Hacker",
-    icon: Shield,
+    name: "AI Prompting",
+    description: "Expert & Certified in Prompting",
+    icon: Tag,
     color: "text-cyber-green"
   },
   {
-    name: "AWS Security",
-    description: "AWS Certified Security Specialty",
+    name: "Cloud Engineer",
+    description: "Passionate Cloud Engineering Expert",
     icon: Cloud,
     color: "text-cyber-purple"
   },
   {
-    name: "OSCP",
-    description: "Offensive Security Certified Professional",
+    name: "IT Support",
+    description: "Certified in IT Support",
     icon: Bug,
     color: "text-cyber-yellow"
   }
@@ -49,14 +49,16 @@ export default function About() {
           >
             <h2 className="text-4xl font-bold text-white mb-6">About Me</h2>
             <p className="text-lg text-gray-300 mb-6">
-              With over 5 years of experience in cybersecurity, I specialize in protecting 
-              organizations from evolving digital threats. My expertise spans network security, 
-              penetration testing, incident response, and risk assessment.
+              I'm Saif, a passionate multi-disciplinary technology expert with certifications across 
+              cybersecurity, cloud engineering, AI prompting, and full-stack development. Currently 
+              working on NetSec - a comprehensive networking scanning application for device discovery 
+              and management.
             </p>
             <p className="text-lg text-gray-300 mb-8">
-              I'm passionate about staying ahead of emerging threats and continuously expanding 
-              my knowledge in areas like cloud security, AI-powered threat detection, and 
-              zero-trust architectures.
+              My expertise spans from securing digital landscapes and network engineering to creating 
+              intuitive UI/UX designs and transforming data into actionable insights. I'm always 
+              learning and currently expanding my backend development skills while collaborating on 
+              innovative tech projects.
             </p>
             
             <div className="grid grid-cols-2 gap-6 mb-8">

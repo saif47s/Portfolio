@@ -6,31 +6,58 @@ import { ExternalLink, Github, FileText, Calendar } from "lucide-react";
 
 const projects = [
   {
-    title: "Enterprise Network Security Assessment",
-    description: "Comprehensive security assessment of a Fortune 500 company's network infrastructure, identifying critical vulnerabilities and implementing defense strategies.",
-    category: "Network Security",
-    year: "2024",
-    technologies: ["Nmap", "Wireshark", "Firewall Config"],
+    title: "NetSec - Network Scanning App",
+    description: "Currently developing a comprehensive networking scanning application for device discovery and management. Features network mapping, device identification, and security analysis tools.",
+    category: "Network Engineering",
+    year: "2025",
+    technologies: ["Python", "Network Protocols", "Security Analysis", "Device Management"],
     image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
     categoryColor: "bg-cyber-blue"
   },
   {
-    title: "Web Application Security Testing",
-    description: "Full-scale penetration testing of e-commerce platform, discovering and responsibly disclosing multiple high-severity vulnerabilities.",
-    category: "Penetration Testing",
+    title: "Data Analysis & Visualization Platform",
+    description: "Advanced data analysis platform with interactive visualizations, transforming complex datasets into actionable business insights using modern analytics techniques.",
+    category: "Data Analysis",
     year: "2024",
-    technologies: ["Burp Suite", "OWASP", "SQLi"],
-    image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+    technologies: ["Python", "Data Visualization", "Analytics", "Business Intelligence"],
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
     categoryColor: "bg-cyber-green"
   },
   {
-    title: "Ransomware Attack Response",
-    description: "Led incident response team during major ransomware attack, minimizing damage and implementing recovery procedures within 24 hours.",
-    category: "Incident Response",
-    year: "2023",
-    technologies: ["Digital Forensics", "Splunk", "Containment"],
+    title: "Cloud Security & Mobile Development",
+    description: "Comprehensive cloud security implementation with React Native mobile applications, featuring secure authentication, data protection, and cross-platform compatibility.",
+    category: "Cloud & Mobile",
+    year: "2024",
+    technologies: ["React Native", "Cloud Security", "Mobile Development", "Cross-platform"],
     image: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
     categoryColor: "bg-cyber-purple"
+  },
+  {
+    title: "UI/UX Design & SEO Optimization",
+    description: "Complete UI/UX design systems with integrated SEO optimization strategies, improving user experience and search engine visibility for multiple client projects.",
+    category: "Design & SEO",
+    year: "2024",
+    technologies: ["UI/UX Design", "SEO Optimization", "Design Systems", "User Experience"],
+    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+    categoryColor: "bg-yellow-500"
+  },
+  {
+    title: "AI Prompting & Business IT Solutions",
+    description: "Expert AI prompting solutions for business automation and IT optimization, helping organizations leverage AI technologies for improved efficiency and decision-making.",
+    category: "AI & Business IT",
+    year: "2024",
+    technologies: ["AI Prompting", "Business Automation", "IT Optimization", "Machine Learning"],
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+    categoryColor: "bg-purple-500"
+  },
+  {
+    title: "Database Administration & Management",
+    description: "Complete database design, administration, and management solutions with focus on performance optimization, security, and scalability for enterprise applications.",
+    category: "Database Management",
+    year: "2024",
+    technologies: ["Database Design", "Performance Optimization", "Security", "Scalability"],
+    image: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
+    categoryColor: "bg-indigo-500"
   }
 ];
 

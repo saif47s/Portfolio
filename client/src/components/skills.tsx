@@ -14,46 +14,67 @@ import {
 
 const skills = [
   {
-    title: "Network Security",
-    icon: Network,
-    progress: 85,
+    title: "Cybersecurity Expert",
+    icon: Shield,
+    progress: 95,
     gradient: "from-cyber-blue to-cyber-purple",
-    items: ["Firewall Configuration", "VPN Implementation", "IDS/IPS Systems", "Network Monitoring"]
+    items: ["Network Security", "Penetration Testing", "Incident Response", "Threat Analysis"]
   },
   {
-    title: "Penetration Testing",
-    icon: Bug,
-    progress: 80,
-    gradient: "from-cyber-green to-emerald-600",
-    items: ["Vulnerability Assessment", "Web App Testing", "Social Engineering", "Report Writing"]
-  },
-  {
-    title: "Incident Response",
-    icon: AlertTriangle,
-    progress: 75,
-    gradient: "from-cyber-purple to-purple-600",
-    items: ["Threat Hunting", "Digital Forensics", "Malware Analysis", "Recovery Planning"]
-  },
-  {
-    title: "Risk Assessment",
-    icon: TrendingUp,
-    progress: 80,
-    gradient: "from-yellow-500 to-orange-500",
-    items: ["Security Audits", "Compliance Testing", "Policy Development", "Risk Mitigation"]
-  },
-  {
-    title: "Cloud Security",
-    icon: Cloud,
-    progress: 75,
-    gradient: "from-indigo-500 to-blue-600",
-    items: ["AWS Security", "Azure Protection", "Container Security", "IAM Implementation"]
-  },
-  {
-    title: "Security Tools",
-    icon: Settings,
+    title: "Network Engineering",
+    icon: Network,
     progress: 90,
+    gradient: "from-cyber-green to-emerald-600",
+    items: ["Computer Networking", "Network Design", "Infrastructure", "Network Monitoring"]
+  },
+  {
+    title: "Cloud Engineering",
+    icon: Cloud,
+    progress: 85,
+    gradient: "from-cyber-purple to-purple-600",
+    items: ["AWS/Azure/GCP", "Cloud Security", "Infrastructure as Code", "DevOps"]
+  },
+  {
+    title: "UI/UX Design",
+    icon: Settings,
+    progress: 80,
+    gradient: "from-pink-500 to-rose-600",
+    items: ["User Interface Design", "User Experience", "Prototyping", "Design Systems"]
+  },
+  {
+    title: "Data Analysis & Visualization",
+    icon: TrendingUp,
+    progress: 85,
+    gradient: "from-yellow-500 to-orange-500",
+    items: ["Advanced Data Analysis", "Data Visualization", "Business Intelligence", "Insights Generation"]
+  },
+  {
+    title: "SEO & Business IT",
+    icon: AlertTriangle,
+    progress: 80,
+    gradient: "from-indigo-500 to-blue-600",
+    items: ["Search Engine Optimization", "Business IT Optimization", "Digital Marketing", "Analytics"]
+  },
+  {
+    title: "AI & Prompting",
+    icon: Bug,
+    progress: 90,
+    gradient: "from-purple-500 to-indigo-600",
+    items: ["Expert Prompting", "AI Integration", "Machine Learning", "Automation"]
+  },
+  {
+    title: "Development & Mobile",
+    icon: CheckCircle,
+    progress: 85,
+    gradient: "from-green-500 to-teal-600",
+    items: ["Python Development", "React Native", "Mobile Apps", "Database Management"]
+  },
+  {
+    title: "IT Support & Administration",
+    icon: Settings,
+    progress: 80,
     gradient: "from-red-500 to-pink-600",
-    items: ["Nmap, Wireshark", "Metasploit, Burp Suite", "Splunk, ELK Stack", "Kali Linux, OSINT"]
+    items: ["IT Support Certified", "Database Administration", "System Management", "Technical Support"]
   }
 ];
 

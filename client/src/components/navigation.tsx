@@ -58,7 +58,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0 flex items-center">
             <Shield className="h-8 w-8 text-cyber-blue mr-2" />
-            <span className="text-2xl font-bold text-cyber-blue">CyberSec</span>
+            <span className="text-2xl font-bold text-cyber-blue">Saif Portfolio</span>
           </div>
           
           {/* Desktop Navigation */}

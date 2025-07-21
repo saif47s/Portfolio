@@ -2,10 +2,12 @@ import { Shield, Linkedin, Github, Twitter } from "lucide-react";
 import { SiMedium } from "react-icons/si";
 
 const services = [
-  "Penetration Testing",
-  "Security Assessment", 
-  "Incident Response",
-  "Security Consulting"
+  "Cybersecurity Services",
+  "Cloud Engineering", 
+  "UI/UX Design",
+  "Data Analysis & AI",
+  "Mobile Development",
+  "Network Engineering"
 ];
 
 const quickLinks = [
@@ -30,11 +32,11 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center mb-4">
               <Shield className="h-8 w-8 text-cyber-blue mr-2" />
-              <span className="text-2xl font-bold text-cyber-blue">CyberSec</span>
-              <span className="text-gray-400 ml-2">Professional</span>
+              <span className="text-2xl font-bold text-cyber-blue">Saif</span>
+              <span className="text-gray-400 ml-2">Multi-Tech Expert</span>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
-              Protecting your digital future with cutting-edge cybersecurity solutions and expertise.
+              Expert in Cybersecurity, Cloud Engineering, AI Prompting, Data Analysis, and Full-Stack Development. Transforming data into insights and securing digital landscapes.
             </p>
             <div className="flex space-x-4">
               <a 
