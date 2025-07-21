@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Github, FileText, Calendar, Filter } from "lucide-react";
+import { SkeletonCard } from "@/components/loading-spinner";
 
 const projects = [
   {
@@ -93,14 +94,21 @@ const categories = ["All", "Cybersecurity", "Network Engineering", "Cloud Engine
 export default function ProjectsFilter() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [filteredProjects, setFilteredProjects] = useState(projects);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCategoryChange = (category: string) => {
+    setIsLoading(true);
     setSelectedCategory(category);
-    if (category === "All") {
-      setFilteredProjects(projects);
-    } else {
-      setFilteredProjects(projects.filter(project => project.category === category));
-    }
+    
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      if (category === "All") {
+        setFilteredProjects(projects);
+      } else {
+        setFilteredProjects(projects.filter(project => project.category === category));
+      }
+      setIsLoading(false);
+    }, 300);
   };
 
   return (
@@ -142,8 +150,13 @@ export default function ProjectsFilter() {
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project, index) => (
-            <motion.div
+          {isLoading ? (
+            Array.from({ length: 6 }).map((_, index) => (
+              <SkeletonCard key={index} />
+            ))
+          ) : (
+            filteredProjects.map((project, index) => (
+              <motion.div
               key={`${project.title}-${selectedCategory}`}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -216,7 +229,8 @@ export default function ProjectsFilter() {
                 </CardContent>
               </Card>
             </motion.div>
-          ))}
+            ))
+          )}
         </div>
         
         <motion.div 

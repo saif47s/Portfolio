@@ -5,6 +5,7 @@ import ProjectsFilter from "@/components/projects-filter";
 import About from "@/components/about";
 import Experience from "@/components/experience";
 import Certifications from "@/components/certifications";
+import AnalyticsDashboard from "@/components/analytics-dashboard";
 import Testimonials from "@/components/testimonials";
 import Blog from "@/components/blog";
 import Contact from "@/components/contact";
@@ -21,6 +22,7 @@ export default function Home() {
       <About />
       <Certifications />
       <Experience />
+      <AnalyticsDashboard />
       <Testimonials />
       <Blog />
       <Contact />

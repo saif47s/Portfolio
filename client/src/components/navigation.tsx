@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/theme-toggle";
+import Search from "@/components/search";
 
 const navItems = [
   { href: "#home", label: "Home" },
@@ -80,6 +81,7 @@ export default function Navigation() {
                   {item.label}
                 </button>
               ))}
+              <Search />
               <ThemeToggle />
             </div>
           </div>
