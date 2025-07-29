@@ -17,8 +17,11 @@ import {
   Calendar,
   Activity,
   BarChart3,
-  PieChart
+  PieChart,
+  Loader2
 } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const stats = [
   {
@@ -110,6 +113,45 @@ const projectCategories = [
 ];
 
 export default function AnalyticsDashboard() {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const { toast } = useToast();
+
+  const handleDownloadReport = async () => {
+    setIsDownloading(true);
+    
+    try {
+      const response = await fetch('/api/analytics/report');
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'saif-portfolio-analytics-report.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        toast({
+          title: "Report Downloaded ✓",
+          description: "Analytics report saved successfully",
+          duration: 3000,
+        });
+      } else {
+        throw new Error('Download failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Unable to generate analytics report",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <section id="analytics" className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -253,9 +295,22 @@ export default function AnalyticsDashboard() {
               </div>
               
               <div className="mt-8 text-center">
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  <Download className="mr-2 h-4 w-4" />
-                  Download Full Report
+                <Button 
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                  onClick={handleDownloadReport}
+                  disabled={isDownloading}
+                >
+                  {isDownloading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating Report...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="mr-2 h-4 w-4" />
+                      Download Full Report
+                    </>
+                  )}
                 </Button>
               </div>
             </CardContent>

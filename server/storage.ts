@@ -1,4 +1,4 @@
-import { users, contactSubmissions, type User, type InsertUser, type Contact, type InsertContact } from "@shared/schema";
+import { users, contactSubmissions, testimonials, type User, type InsertUser, type Contact, type InsertContact, type Testimonial, type InsertTestimonial } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
@@ -8,6 +8,8 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   createContactSubmission(contact: InsertContact): Promise<Contact>;
   getContactSubmissions(): Promise<Contact[]>;
+  createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial>;
+  getTestimonials(approved?: boolean): Promise<Testimonial[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -40,6 +42,23 @@ export class DatabaseStorage implements IStorage {
   async getContactSubmissions(): Promise<Contact[]> {
     const contacts = await db.select().from(contactSubmissions).orderBy(contactSubmissions.createdAt);
     return contacts.reverse(); // Most recent first
+  }
+
+  async createTestimonial(insertTestimonial: InsertTestimonial): Promise<Testimonial> {
+    const [testimonial] = await db
+      .insert(testimonials)
+      .values(insertTestimonial)
+      .returning();
+    return testimonial;
+  }
+
+  async getTestimonials(approved?: boolean): Promise<Testimonial[]> {
+    const query = db.select().from(testimonials);
+    if (approved !== undefined) {
+      query.where(eq(testimonials.approved, approved));
+    }
+    const results = await query.orderBy(testimonials.submittedAt);
+    return results.reverse(); // Most recent first
   }
 }
 

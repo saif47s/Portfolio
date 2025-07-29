@@ -2,7 +2,9 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Calendar, Award, CheckCircle } from "lucide-react";
+import { ExternalLink, Calendar, Award, CheckCircle, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const certifications = [
   {
@@ -74,6 +76,56 @@ const certifications = [
 ];
 
 export default function Certifications() {
+  const [verifyingIds, setVerifyingIds] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
+
+  const handleVerifyCredential = async (credentialId: string, issuer: string) => {
+    setVerifyingIds(prev => new Set(Array.from(prev).concat(credentialId)));
+    
+    try {
+      const response = await fetch('/api/verify-credential', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ credentialId, issuer }),
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.verified) {
+        toast({
+          title: "Credential Verified ✓",
+          description: `${issuer} credential is valid and active`,
+          duration: 4000,
+        });
+        
+        // Open verification URL in new tab
+        if (result.verificationUrl) {
+          window.open(result.verificationUrl, '_blank');
+        }
+      } else {
+        toast({
+          title: "Verification Failed",
+          description: result.message || "Could not verify credential",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Verification Error",
+        description: "Unable to connect to verification service",
+        variant: "destructive",
+      });
+    } finally {
+      setVerifyingIds(prev => {
+        const newSet = new Set(Array.from(prev));
+        newSet.delete(credentialId);
+        return newSet;
+      });
+    }
+  };
+
   return (
     <section className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -139,9 +191,20 @@ export default function Certifications() {
                     variant="outline" 
                     size="sm"
                     className="w-full text-primary border-primary hover:bg-primary hover:text-primary-foreground"
+                    onClick={() => handleVerifyCredential(cert.credentialId, cert.issuer)}
+                    disabled={verifyingIds.has(cert.credentialId)}
                   >
-                    <ExternalLink className="mr-2 h-3 w-3" />
-                    Verify Credential
+                    {verifyingIds.has(cert.credentialId) ? (
+                      <>
+                        <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                        Verifying...
+                      </>
+                    ) : (
+                      <>
+                        <ExternalLink className="mr-2 h-3 w-3" />
+                        Verify Credential
+                      </>
+                    )}
                   </Button>
                 </CardContent>
               </Card>

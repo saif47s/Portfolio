@@ -35,3 +35,26 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contactSubmissions.$inferSelect;
+
+// Testimonials table
+export const testimonials = pgTable("testimonials", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  company: text("company"),
+  position: text("position"),
+  rating: integer("rating").notNull(),
+  testimonial: text("testimonial").notNull(),
+  project: text("project"),
+  approved: boolean("approved").default(false),
+  submittedAt: timestamp("submitted_at").defaultNow(),
+});
+
+export const insertTestimonialSchema = createInsertSchema(testimonials).omit({
+  id: true,
+  submittedAt: true,
+  approved: true,
+});
+
+export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
+export type Testimonial = typeof testimonials.$inferSelect;
