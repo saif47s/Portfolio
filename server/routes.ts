@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertTestimonialSchema, type InsertContact } from "@shared/schema";
+import { insertContactSchema, insertTestimonialSchema, insertBlogPostSchema, type InsertContact } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -153,6 +153,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         success: false, 
         message: "Verification service temporarily unavailable" 
+      });
+    }
+  });
+
+  // Blog posts endpoints
+  app.post("/api/blog", async (req, res) => {
+    try {
+      const blogData = insertBlogPostSchema.parse(req.body);
+      const blogPost = await storage.createBlogPost(blogData);
+      
+      res.json({ 
+        success: true, 
+        message: "Blog post created successfully",
+        id: blogPost.id 
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ 
+          success: false, 
+          message: "Invalid blog data", 
+          errors: error.errors 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          message: "Internal server error" 
+        });
+      }
+    }
+  });
+
+  app.get("/api/blog", async (req, res) => {
+    try {
+      const published = req.query.published === 'true' ? true : req.query.published === 'false' ? false : undefined;
+      const blogPosts = await storage.getBlogPosts(published);
+      res.json(blogPosts);
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to retrieve blog posts" 
+      });
+    }
+  });
+
+  app.get("/api/blog/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const blogPost = await storage.getBlogPost(id);
+      if (blogPost) {
+        res.json(blogPost);
+      } else {
+        res.status(404).json({ 
+          success: false, 
+          message: "Blog post not found" 
+        });
+      }
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to retrieve blog post" 
       });
     }
   });

@@ -1,8 +1,31 @@
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, ArrowRight, ExternalLink } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Calendar, Clock, ArrowRight, ExternalLink, Plus, Send, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 const blogPosts = [
   {
@@ -67,7 +90,93 @@ const blogPosts = [
   }
 ];
 
+const blogFormSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters"),
+  excerpt: z.string().min(20, "Excerpt must be at least 20 characters"),
+  content: z.string().min(100, "Content must be at least 100 characters"),
+  category: z.string().min(2, "Category is required"),
+  tags: z.string().min(2, "At least one tag is required"),
+  image: z.string().url("Please enter a valid image URL"),
+  readTime: z.string().min(1, "Read time is required"),
+  published: z.boolean().default(false),
+});
+
+type BlogFormData = z.infer<typeof blogFormSchema>;
+
 export default function Blog() {
+  const [, setLocation] = useLocation();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm<BlogFormData>({
+    resolver: zodResolver(blogFormSchema),
+    defaultValues: {
+      title: "",
+      excerpt: "",
+      content: "",
+      category: "",
+      tags: "",
+      image: "",
+      readTime: "",
+      published: false,
+    },
+  });
+
+  const onSubmit = async (data: BlogFormData) => {
+    setIsSubmitting(true);
+    
+    try {
+      const blogData = {
+        ...data,
+        tags: data.tags.split(',').map(tag => tag.trim()),
+      };
+
+      const response = await fetch('/api/blog', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(blogData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Blog Post Created ✓",
+          description: data.published ? "Blog post published successfully" : "Blog post saved as draft",
+          duration: 5000,
+        });
+        
+        form.reset();
+        setIsDialogOpen(false);
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      toast({
+        title: "Creation Failed",
+        description: "Unable to create blog post. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReadMore = (postIndex: number) => {
+    // For demo purposes, create a mock blog detail view
+    // In real implementation, you'd navigate to the actual blog post
+    toast({
+      title: "Blog Detail",
+      description: `Opening ${blogPosts[postIndex].title}...`,
+    });
+  };
+
+  const handleViewAllArticles = () => {
+    setLocation('/blog');
+  };
   return (
     <section id="blog" className="py-20 bg-muted/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -78,7 +187,184 @@ export default function Blog() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-foreground mb-4">Technical Blog</h2>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h2 className="text-4xl font-bold text-foreground">Technical Blog</h2>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  size="sm" 
+                  className="bg-primary hover:bg-primary/80 text-primary-foreground"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Post
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Create New Blog Post</DialogTitle>
+                </DialogHeader>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Blog post title" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g. Cybersecurity" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="readTime"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Read Time *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g. 5 min read" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="excerpt"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Excerpt *</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Brief description of the blog post..." 
+                              className="min-h-[80px]"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="content"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Content *</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Full blog post content (HTML supported)..." 
+                              className="min-h-[200px]"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="tags"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tags *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="tag1, tag2, tag3" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="image"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Image URL *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://example.com/image.jpg" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="published"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="rounded border-gray-300"
+                            />
+                          </FormControl>
+                          <FormLabel className="text-sm font-normal">
+                            Publish immediately
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="flex gap-3 pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsDialogOpen(false)}
+                        className="flex-1"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex-1"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Creating...
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4 mr-2" />
+                            Create Post
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Insights, tutorials, and deep dives into cybersecurity, development, and emerging technologies
           </p>
@@ -132,6 +418,7 @@ export default function Blog() {
                   <Button 
                     variant="ghost" 
                     className="text-primary hover:text-primary/80 transition-colors p-0 h-auto font-medium"
+                    onClick={() => handleReadMore(index)}
                   >
                     Read More
                     <ArrowRight className="ml-1 h-4 w-4" />
@@ -149,7 +436,10 @@ export default function Blog() {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-8">
+          <Button 
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-8"
+            onClick={handleViewAllArticles}
+          >
             <ExternalLink className="mr-2 h-4 w-4" />
             View All Articles
           </Button>
