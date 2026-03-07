@@ -28,9 +28,23 @@ const cloudinaryConfig = {
   api_secret: process.env.CLOUDINARY_API_SECRET || ''
 };
 
-if (!cloudinaryConfig.cloud_name || !cloudinaryConfig.api_key || !cloudinaryConfig.api_secret) {
-  console.warn("WARNING: Cloudinary credentials are not fully set in environment variables. Image uploads will fail.");
-}
+// Helper to safely log partial secret for debugging
+const safeLog = (name: string, value: string) => {
+  if (!value) {
+    console.log(`[Cloudinary Config] ${name} is MISSING`);
+    return;
+  }
+  const masked = value.length > 6
+    ? `${value.substring(0, 3)}...${value.substring(value.length - 3)}`
+    : "***";
+  console.log(`[Cloudinary Config] ${name}: ${masked} (Length: ${value.length})`);
+};
+
+console.log("--- Cloudinary Configuration Check ---");
+safeLog("CLOUD_NAME", cloudinaryConfig.cloud_name);
+safeLog("API_KEY", cloudinaryConfig.api_key);
+safeLog("API_SECRET", cloudinaryConfig.api_secret);
+console.log("---------------------------------------");
 
 cloudinary.config(cloudinaryConfig);
 
