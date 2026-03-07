@@ -69,7 +69,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.json({ url: result.secure_url });
         } else {
           console.error("Cloudinary upload error:", error);
-          res.status(500).json({ message: "Upload to Cloudinary failed" });
+          const errorMessage = error?.message || "Upload to Cloudinary failed";
+          res.status(500).json({ message: errorMessage });
         }
       }
     );
