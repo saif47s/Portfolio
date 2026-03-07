@@ -103,6 +103,7 @@ export class DatabaseStorage implements IStorage {
       const settings = await db.select().from(siteSettings);
       if (settings.length === 0) {
         await db.insert(siteSettings).values({
+          navbarBrandName: "Saif Portfolio",
           heroName: "Saif - Multi-Tech",
           heroTitle: "Expert",
           heroSubtitle: "Certified Expert in Cybersecurity",
@@ -135,6 +136,7 @@ export class DatabaseStorage implements IStorage {
       // Fallback if somehow not seeded
       return {
         id: 1,
+        navbarBrandName: "Saif Portfolio",
         heroName: "Saif - Multi-Tech",
         heroTitle: "Expert",
         heroSubtitle: "Certified Expert in Cybersecurity",

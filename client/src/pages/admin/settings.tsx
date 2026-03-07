@@ -24,6 +24,7 @@ export default function AdminSettings() {
     const form = useForm({
         resolver: zodResolver(insertSiteSettingsSchema),
         values: settings || {
+            navbarBrandName: "",
             heroName: "",
             heroTitle: "",
             heroSubtitle: "",
@@ -134,6 +135,20 @@ export default function AdminSettings() {
                                     <CardContent className="pt-6 space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-4">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="navbarBrandName"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Navbar Brand Name</FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="Saif Portfolio" {...field} />
+                                                            </FormControl>
+                                                            <FormDescription>The text displayed in the top-left corner of the site.</FormDescription>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
                                                 <FormField
                                                     control={form.control}
                                                     name="heroName"

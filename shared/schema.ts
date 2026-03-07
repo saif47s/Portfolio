@@ -166,6 +166,7 @@ export type InsertExperience = z.infer<typeof insertExperienceSchema>;
 export type Experience = typeof experiences.$inferSelect;// Site settings table
 export const siteSettings = pgTable("site_settings", {
   id: serial("id").primaryKey(),
+  navbarBrandName: text("navbar_brand_name").notNull().default("Saif Portfolio"),
   heroName: text("hero_name").notNull().default("Saif - Multi-Tech"),
   heroTitle: text("hero_title").notNull().default("Expert"),
   heroSubtitle: text("hero_subtitle").notNull().default("Certified Expert in Cybersecurity"),
