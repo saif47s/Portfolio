@@ -39,7 +39,10 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
                 credentials: "include",
             });
 
-            if (!res.ok) throw new Error("Upload failed");
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.message || `Upload failed with status ${res.status}`);
+            }
 
             const data = await res.json();
             onChange(data.url);
@@ -47,10 +50,11 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
                 title: "Success",
                 description: "Image uploaded successfully",
             });
-        } catch (error) {
+        } catch (error: any) {
+            console.error("Upload error:", error);
             toast({
                 title: "Upload failed",
-                description: "Could not upload image",
+                description: error.message || "Could not upload image",
                 variant: "destructive"
             });
         } finally {
