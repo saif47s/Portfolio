@@ -90,7 +90,7 @@ export class DatabaseStorage implements IStorage {
 
   private async fixSchema() {
     try {
-      console.log('Checking for missing columns in site_settings...');
+      console.log('--- STARTING DATABASE SCHEMA VERIFICATION ---');
       const columnsToAdd = [
         { name: 'navbar_brand_name', type: 'text', default: "'Saif Portfolio'" },
         { name: 'about_image', type: 'text', default: "''" },
@@ -108,23 +108,29 @@ export class DatabaseStorage implements IStorage {
 
       for (const col of columnsToAdd) {
         try {
-          // Drizzle doesn't have a built-in "column exists" check that's easy to use here, 
-          // so we use raw SQL to check and add if missing.
-          await pool.query(`
-            DO $$ 
-            BEGIN 
-              IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='site_settings' AND column_name='${col.name}') THEN
-                ALTER TABLE site_settings ADD COLUMN ${col.name} ${col.type} NOT NULL DEFAULT ${col.default};
-              END IF;
-            END $$;
-          `);
-        } catch (err) {
-          console.error(`Error adding column ${col.name}:`, err);
+          console.log(`Verifying column: ${col.name}`);
+          // Using a more robust check that doesn't rely on DO block if it fails for some reason
+          const checkQuery = `
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_name='site_settings' AND column_name='${col.name}';
+          `;
+          const exists = await pool.query(checkQuery);
+
+          if (exists.rowCount === 0) {
+            console.log(`Column ${col.name} is missing. Adding...`);
+            await pool.query(`ALTER TABLE site_settings ADD COLUMN ${col.name} ${col.type} NOT NULL DEFAULT ${col.default};`);
+            console.log(`Successfully added column: ${col.name}`);
+          } else {
+            console.log(`Column ${col.name} exists.`);
+          }
+        } catch (err: any) {
+          console.error(`FAILED to process column ${col.name}:`, err.message);
         }
       }
-      console.log('Schema verification/fix completed.');
-    } catch (error) {
-      console.error('Error during schema fix:', error);
+      console.log('--- DATABASE SCHEMA VERIFICATION COMPLETE ---');
+    } catch (error: any) {
+      console.error('CRITICAL: Error during schema verification:', error.message);
     }
   }
 
