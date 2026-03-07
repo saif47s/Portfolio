@@ -79,8 +79,53 @@ export class DatabaseStorage implements IStorage {
       pool,
       createTableIfMissing: true,
     });
-    this.seedAdmin();
-    this.seedSiteSettings();
+    this.init();
+  }
+
+  private async init() {
+    await this.fixSchema();
+    await this.seedAdmin();
+    await this.seedSiteSettings();
+  }
+
+  private async fixSchema() {
+    try {
+      console.log('Checking for missing columns in site_settings...');
+      const columnsToAdd = [
+        { name: 'navbar_brand_name', type: 'text', default: "'Saif Portfolio'" },
+        { name: 'about_image', type: 'text', default: "''" },
+        { name: 'stats_experience', type: 'text', default: "'5+ Years'" },
+        { name: 'stats_projects', type: 'text', default: "'50+'" },
+        { name: 'stats_certifications', type: 'text', default: "'8'" },
+        { name: 'stats_security_incidents', type: 'text', default: "'100+'" },
+        { name: 'footer_brand_name', type: 'text', default: "'Saif'" },
+        { name: 'footer_brand_subtitle', type: 'text', default: "'Multi-Tech Expert'" },
+        { name: 'footer_description', type: 'text', default: "'Expert in Cybersecurity, Cloud Engineering, AI Prompting, Data Analysis, and Full-Stack Development.'" },
+        { name: 'footer_services', type: 'text', default: '\'["Cybersecurity Services","Cloud Engineering","UI/UX Design","Data Analysis & AI","Mobile Development","Network Engineering"]\'' },
+        { name: 'footer_quick_links', type: 'text', default: '\'[{"name":"Home","href":"#home"},{"name":"Skills","href":"#skills"},{"name":"Projects","href":"#projects"},{"name":"Contact","href":"#contact"}]\' ' },
+        { name: 'footer_copyright', type: 'text', default: "'© 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide.'" }
+      ];
+
+      for (const col of columnsToAdd) {
+        try {
+          // Drizzle doesn't have a built-in "column exists" check that's easy to use here, 
+          // so we use raw SQL to check and add if missing.
+          await pool.query(`
+            DO $$ 
+            BEGIN 
+              IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='site_settings' AND column_name='${col.name}') THEN
+                ALTER TABLE site_settings ADD COLUMN ${col.name} ${col.type} NOT NULL DEFAULT ${col.default};
+              END IF;
+            END $$;
+          `);
+        } catch (err) {
+          console.error(`Error adding column ${col.name}:`, err);
+        }
+      }
+      console.log('Schema verification/fix completed.');
+    } catch (error) {
+      console.error('Error during schema fix:', error);
+    }
   }
 
   private async seedAdmin() {
