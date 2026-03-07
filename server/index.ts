@@ -168,6 +168,16 @@ app.use((req, res, next) => {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS security_answer TEXT;
     `;
     await pool.query(alterTableSql);
+
+    // Check if admin user exists
+    const adminCheck = await pool.query("SELECT * FROM users WHERE username = 'admin'");
+    if (adminCheck.rows.length === 0) {
+      await pool.query("INSERT INTO users (username, password) VALUES ('admin', 'admin123')");
+      log("Admin user created (admin/admin123)");
+    } else {
+      log("Admin user verified");
+    }
+
     log("Database tables verified/created (SSL Fix V2)");
   } catch (err) {
     console.error("Database initialization failed:", err);
