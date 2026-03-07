@@ -32,11 +32,10 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
         formData.append("file", file);
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || "";
-            const res = await fetch(`${apiUrl}/api/upload`, {
+            const res = await fetch("/api/upload", {
                 method: "POST",
                 body: formData,
-                credentials: "include", // Required for cross-origin session cookies
+                credentials: "include",
             });
 
             if (!res.ok) throw new Error("Upload failed");
