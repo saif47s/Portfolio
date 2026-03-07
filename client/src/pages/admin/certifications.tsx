@@ -32,9 +32,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Plus, Trash2, Loader2, ExternalLink, Edit2 } from "lucide-react";
+import { Plus, Trash2, Loader2, ExternalLink, Edit2, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import ImageUpload from "@/components/image-upload";
 
 type FormValues = z.infer<typeof insertCertificationSchema>;
 
@@ -259,8 +260,14 @@ export default function AdminCertifications() {
                                     name="image"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Image URL</FormLabel>
-                                            <FormControl><Input placeholder="https://unsplash.com/..." {...field} value={field.value || ""} /></FormControl>
+                                            <FormLabel>Certification Badge / Photo</FormLabel>
+                                            <FormControl>
+                                                <ImageUpload
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    label="Certification Image"
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}

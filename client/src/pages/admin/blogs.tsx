@@ -27,8 +27,9 @@ import { insertBlogPostSchema, type BlogPost } from "@shared/schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, Loader2, Pencil, Trash2, BookOpen } from "lucide-react";
+import { Plus, Loader2, Pencil, Trash2, BookOpen, Upload } from "lucide-react";
 import { useState } from "react";
+import ImageUpload from "@/components/image-upload";
 
 export default function AdminBlogs() {
     const [open, setOpen] = useState(false);
@@ -216,9 +217,13 @@ export default function AdminBlogs() {
                                         name="image"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Feature Image URL</FormLabel>
+                                                <FormLabel>Feature Image</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="https://..." {...field} />
+                                                    <ImageUpload
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                        label="Feature Image"
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

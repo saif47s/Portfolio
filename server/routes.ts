@@ -16,23 +16,20 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import streamifier from "streamifier";
 import path from "path";
 import fs from "fs";
 
-// Configure multer for file uploads
-const uploadStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = "uploads";
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: 'dzu9lk0n6',
+  api_key: '919934666692768',
+  api_secret: '9VyTaKHW9WnfWwct5fqOcyJRyp0'
 });
+
+// Configure multer for file uploads
+const uploadStorage = multer.memoryStorage();
 
 const upload = multer({
   storage: uploadStorage,
@@ -56,8 +53,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
-    const filePath = `/uploads/${req.file.filename}`;
-    res.json({ url: filePath });
+
+    const cld_upload_stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "portfolio",
+      },
+      (error: any, result: any) => {
+        if (result) {
+          res.json({ url: result.secure_url });
+        } else {
+          console.error("Cloudinary upload error:", error);
+          res.status(500).json({ message: "Upload to Cloudinary failed" });
+        }
+      }
+    );
+
+    // Robust streamifier usage for ESM
+    const s: any = streamifier;
+    const streamFunc = s.createReadStream || (s.default && s.default.createReadStream) || s;
+
+    if (typeof streamFunc === 'function') {
+      streamFunc(req.file.buffer).pipe(cld_upload_stream);
+    } else {
+      console.error("Streamifier function not found", s);
+      res.status(500).json({ message: "Upload utility error" });
+    }
   });
 
   // Admin Profile & Security

@@ -32,8 +32,9 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, Loader2, ExternalLink, Edit2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, ExternalLink, Edit2, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ImageUpload from "@/components/image-upload";
 
 type FormValues = z.infer<typeof insertProjectSchema>;
 
@@ -259,8 +260,14 @@ export default function AdminProjects() {
                                     name="image"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Image URL</FormLabel>
-                                            <FormControl><Input placeholder="https://..." {...field} /></FormControl>
+                                            <FormLabel>Project Image</FormLabel>
+                                            <FormControl>
+                                                <ImageUpload
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    label="Project Image"
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
