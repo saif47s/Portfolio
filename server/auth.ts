@@ -19,10 +19,9 @@ export function setupAuth(app: Express) {
         store: storage.sessionStore,
         cookie: {
             maxAge: 24 * 60 * 60 * 1000,
-            // In cloud environments like Hugging Face, 'secure: true' might fail if HTTPS is handled by a proxy.
-            // Using a more flexible check here.
-            secure: process.env.NODE_ENV === "production" && process.env.REQUIRE_SECURE_COOKIES === "true",
-            sameSite: "lax",
+            // Cross-origin sessions (Netlify -> HF) REQUIRE secure: true and sameSite: "none"
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         },
     };
 
