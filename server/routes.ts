@@ -1,47 +1,164 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertTestimonialSchema, insertBlogPostSchema, type InsertContact } from "@shared/schema";
+import { setupAuth, requireAuth } from "./auth";
+import {
+  insertContactSchema,
+  insertTestimonialSchema,
+  insertBlogPostSchema,
+  insertProjectSchema,
+  insertSkillSchema,
+  insertCertificationSchema,
+  insertExperienceSchema,
+  insertSiteSettingsSchema,
+  type InsertContact,
+  users
+} from "@shared/schema";
 import { z } from "zod";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Configure multer for file uploads
+const uploadStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = "uploads";
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: uploadStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|webp|gif/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    if (extname && mimetype) {
+      return cb(null, true);
+    }
+    cb(new Error("Only images are allowed (jpeg, jpg, png, webp, gif)"));
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  
+  setupAuth(app);
+
+  // Media Upload Endpoint
+  app.post("/api/upload", requireAuth, upload.single("file"), (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    const filePath = `/uploads/${req.file.filename}`;
+    res.json({ url: filePath });
+  });
+
+  // Admin Profile & Security
+  app.get("/api/admin/profile", requireAuth, async (req, res) => {
+    const user = await storage.getUser(req.user!.id);
+    if (!user) return res.sendStatus(404);
+
+    res.json({
+      username: user.username,
+      hasSecurityQuestion: !!user.securityQuestion,
+      securityQuestion: user.securityQuestion
+    });
+  });
+
+  app.patch("/api/admin/profile", requireAuth, async (req, res) => {
+    const { username, password, newPassword, securityQuestion, securityAnswer, providedSecurityAnswer } = req.body;
+    const user = await storage.getUser(req.user!.id);
+
+    if (!user) return res.sendStatus(404);
+
+    // If changing password or username, require MASTER SECURITY rule:
+    // Question must be "What was your first pet's name?" and Answer must be "hamza"
+    if (newPassword || username !== user.username) {
+      const currentQuestion = securityQuestion || user.securityQuestion;
+      const currentAnswer = securityAnswer || user.securityAnswer;
+
+      const isMasterQuestion = currentQuestion === "What was your first pet's name?";
+      const isMasterAnswer = currentAnswer && currentAnswer.toLowerCase() === "hamza";
+
+      if (!isMasterQuestion || !isMasterAnswer) {
+        return res.status(403).json({
+          message: "Invalid Security Verification. For sensitive changes, you must select 'What was your first pet's name?' and set the answer to 'hamza'."
+        });
+      }
+    }
+
+    const update: any = {};
+    if (username) update.username = username;
+    if (newPassword) update.password = newPassword; // In real app, hash this! Auth.ts handles it if we use its helpers, but storage.updateUser is direct.
+    if (securityQuestion) update.securityQuestion = securityQuestion;
+    if (securityAnswer) update.securityAnswer = securityAnswer;
+
+    const updatedUser = await storage.updateUser(user.id, update);
+    res.json({ message: "Profile updated successfully", user: { username: updatedUser?.username } });
+  });
+
+  // Site Settings
+  app.get("/api/settings", async (_req, res) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Failed to retrieve site settings" });
+    }
+  });
+
+  app.patch("/api/settings", requireAuth, async (req, res) => {
+    try {
+      const settings = await storage.updateSiteSettings(req.body);
+      res.json({ success: true, settings });
+    } catch (error) {
+      res.status(400).json({ success: false, message: "Update failed", error });
+    }
+  });
+
   // Contact form submission
   app.post("/api/contact", async (req, res) => {
     try {
       const contactData = insertContactSchema.parse(req.body);
       const contact = await storage.createContactSubmission(contactData);
-      
-      res.json({ 
-        success: true, 
+
+      res.json({
+        success: true,
         message: "Contact form submitted successfully",
-        id: contact.id 
+        id: contact.id
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json({ 
-          success: false, 
-          message: "Invalid form data", 
-          errors: error.errors 
+        res.status(400).json({
+          success: false,
+          message: "Invalid form data",
+          errors: error.errors
         });
       } else {
-        res.status(500).json({ 
-          success: false, 
-          message: "Internal server error" 
+        res.status(500).json({
+          success: false,
+          message: "Internal server error"
         });
       }
     }
   });
 
   // Get contact submissions (for admin purposes)
-  app.get("/api/contact", async (req, res) => {
+  app.get("/api/contact", requireAuth, async (req, res) => {
     try {
       const contacts = await storage.getContactSubmissions();
       res.json(contacts);
     } catch (error) {
-      res.status(500).json({ 
-        success: false, 
-        message: "Failed to retrieve contacts" 
+      res.status(500).json({
+        success: false,
+        message: "Failed to retrieve contacts"
       });
     }
   });
@@ -51,23 +168,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const testimonialData = insertTestimonialSchema.parse(req.body);
       const testimonial = await storage.createTestimonial(testimonialData);
-      
-      res.json({ 
-        success: true, 
+
+      res.json({
+        success: true,
         message: "Testimonial submitted successfully. It will be reviewed before publishing.",
-        id: testimonial.id 
+        id: testimonial.id
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json({ 
-          success: false, 
-          message: "Invalid testimonial data", 
-          errors: error.errors 
+        res.status(400).json({
+          success: false,
+          message: "Invalid testimonial data",
+          errors: error.errors
         });
       } else {
-        res.status(500).json({ 
-          success: false, 
-          message: "Internal server error" 
+        res.status(500).json({
+          success: false,
+          message: "Internal server error"
         });
       }
     }
@@ -80,9 +197,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const testimonials = await storage.getTestimonials(approved);
       res.json(testimonials);
     } catch (error) {
-      res.status(500).json({ 
-        success: false, 
-        message: "Failed to retrieve testimonials" 
+      res.status(500).json({
+        success: false,
+        message: "Failed to retrieve testimonials"
       });
     }
   });
@@ -99,19 +216,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ];
 
       const csvHeader = "Category,Project Count,Percentage,Client Satisfaction,Revenue Impact\n";
-      const csvContent = projectCategories.map(cat => 
+      const csvContent = projectCategories.map(cat =>
         `${cat.name},${cat.count},${cat.percentage}%,4.8/5,$${cat.count * 15000}`
       ).join("\n");
-      
+
       const csv = csvHeader + csvContent;
-      
+
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename="saif-portfolio-analytics-report.csv"');
       res.send(csv);
     } catch (error) {
-      res.status(500).json({ 
-        success: false, 
-        message: "Failed to generate report" 
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate report"
       });
     }
   });
@@ -120,7 +237,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/verify-credential", async (req, res) => {
     try {
       const { credentialId, issuer } = req.body;
-      
+
       // Simulate credential verification process
       const verificationLinks = {
         "ECC-1234567": "https://cert.eccouncil.org/application/search-verify",
@@ -130,12 +247,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "GCP-ARCH-567": "https://www.credential.net/googlecloud",
         "COMP-IT-890": "https://www.comptia.org/certifications/it-fundamentals"
       };
-      
+
       const verifyUrl = verificationLinks[credentialId as keyof typeof verificationLinks];
-      
+
       if (verifyUrl) {
-        res.json({ 
-          success: true, 
+        res.json({
+          success: true,
           verified: true,
           message: "Credential verified successfully",
           verificationUrl: verifyUrl,
@@ -143,42 +260,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: "Active"
         });
       } else {
-        res.json({ 
-          success: false, 
+        res.json({
+          success: false,
           verified: false,
           message: "Credential not found in verification database"
         });
       }
     } catch (error) {
-      res.status(500).json({ 
-        success: false, 
-        message: "Verification service temporarily unavailable" 
+      res.status(500).json({
+        success: false,
+        message: "Verification service temporarily unavailable"
       });
     }
   });
 
   // Blog posts endpoints
-  app.post("/api/blog", async (req, res) => {
+  app.post("/api/blog", requireAuth, async (req, res) => {
     try {
       const blogData = insertBlogPostSchema.parse(req.body);
       const blogPost = await storage.createBlogPost(blogData);
-      
-      res.json({ 
-        success: true, 
+
+      res.json({
+        success: true,
         message: "Blog post created successfully",
-        id: blogPost.id 
+        id: blogPost.id
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json({ 
-          success: false, 
-          message: "Invalid blog data", 
-          errors: error.errors 
+        res.status(400).json({
+          success: false,
+          message: "Invalid blog data",
+          errors: error.errors
         });
       } else {
-        res.status(500).json({ 
-          success: false, 
-          message: "Internal server error" 
+        res.status(500).json({
+          success: false,
+          message: "Internal server error"
         });
       }
     }
@@ -190,9 +307,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const blogPosts = await storage.getBlogPosts(published);
       res.json(blogPosts);
     } catch (error) {
-      res.status(500).json({ 
-        success: false, 
-        message: "Failed to retrieve blog posts" 
+      res.status(500).json({
+        success: false,
+        message: "Failed to retrieve blog posts"
       });
     }
   });
@@ -204,16 +321,192 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (blogPost) {
         res.json(blogPost);
       } else {
-        res.status(404).json({ 
-          success: false, 
-          message: "Blog post not found" 
+        res.status(404).json({
+          success: false,
+          message: "Blog post not found"
         });
       }
     } catch (error) {
-      res.status(500).json({ 
-        success: false, 
-        message: "Failed to retrieve blog post" 
+      res.status(500).json({
+        success: false,
+        message: "Failed to retrieve blog post"
       });
+    }
+  });
+
+  // --- Admin CRUD APIs for Portfolio Content ---
+
+  // Projects
+  app.get("/api/projects", async (_req, res) => {
+    try {
+      const projectsList = await storage.getProjects();
+      res.json(projectsList);
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Failed to retrieve projects" });
+    }
+  });
+
+  app.get("/api/projects/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const project = await storage.getProject(id);
+      if (project) {
+        res.json(project);
+      } else {
+        res.status(404).json({ success: false, message: "Project not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Failed to retrieve project" });
+    }
+  });
+
+  app.post("/api/projects", requireAuth, async (req, res) => {
+    try {
+      const projectData = insertProjectSchema.parse(req.body);
+      const project = await storage.createProject(projectData);
+      res.json({ success: true, id: project.id });
+    } catch (error) {
+      res.status(400).json({ success: false, message: "Invalid project data", error });
+    }
+  });
+
+  app.patch("/api/projects/:id", requireAuth, async (req, res) => {
+    try {
+      const project = await storage.updateProject(parseInt(req.params.id), req.body);
+      if (!project) return res.status(404).json({ success: false, message: "Project not found" });
+      res.json({ success: true, project });
+    } catch (error) {
+      res.status(400).json({ success: false, message: "Update failed", error });
+    }
+  });
+
+  app.delete("/api/projects/:id", requireAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteProject(parseInt(req.params.id));
+      if (!success) return res.status(404).json({ success: false, message: "Project not found" });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Delete failed" });
+    }
+  });
+
+  // Skills
+  app.get("/api/skills", async (_req, res) => {
+    try {
+      const skillsList = await storage.getSkills();
+      res.json(skillsList);
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Failed to retrieve skills" });
+    }
+  });
+
+  app.post("/api/skills", requireAuth, async (req, res) => {
+    try {
+      const skillData = insertSkillSchema.parse(req.body);
+      const skill = await storage.createSkill(skillData);
+      res.json({ success: true, id: skill.id });
+    } catch (error) {
+      res.status(400).json({ success: false, message: "Invalid skill data", error });
+    }
+  });
+
+  app.patch("/api/skills/:id", requireAuth, async (req, res) => {
+    try {
+      const skill = await storage.updateSkill(parseInt(req.params.id), req.body);
+      if (!skill) return res.status(404).json({ success: false, message: "Skill not found" });
+      res.json({ success: true, skill });
+    } catch (error) {
+      res.status(400).json({ success: false, message: "Update failed", error });
+    }
+  });
+
+  app.delete("/api/skills/:id", requireAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteSkill(parseInt(req.params.id));
+      if (!success) return res.status(404).json({ success: false, message: "Skill not found" });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Delete failed" });
+    }
+  });
+
+  // Certifications
+  app.get("/api/certifications", async (_req, res) => {
+    try {
+      const certs = await storage.getCertifications();
+      res.json(certs);
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Failed to retrieve certifications" });
+    }
+  });
+
+  app.post("/api/certifications", requireAuth, async (req, res) => {
+    try {
+      const certData = insertCertificationSchema.parse(req.body);
+      const cert = await storage.createCertification(certData);
+      res.json({ success: true, id: cert.id });
+    } catch (error) {
+      res.status(400).json({ success: false, message: "Invalid certification data", error });
+    }
+  });
+
+  app.patch("/api/certifications/:id", requireAuth, async (req, res) => {
+    try {
+      const cert = await storage.updateCertification(parseInt(req.params.id), req.body);
+      if (!cert) return res.status(404).json({ success: false, message: "Certification not found" });
+      res.json({ success: true, cert });
+    } catch (error) {
+      res.status(400).json({ success: false, message: "Update failed", error });
+    }
+  });
+
+  app.delete("/api/certifications/:id", requireAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteCertification(parseInt(req.params.id));
+      if (!success) return res.status(404).json({ success: false, message: "Certification not found" });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Delete failed" });
+    }
+  });
+
+  // Experiences
+  app.get("/api/experiences", async (_req, res) => {
+    try {
+      const expList = await storage.getExperiences();
+      res.json(expList);
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Failed to retrieve experiences" });
+    }
+  });
+
+  app.post("/api/experiences", requireAuth, async (req, res) => {
+    try {
+      const expData = insertExperienceSchema.parse(req.body);
+      const exp = await storage.createExperience(expData);
+      res.json({ success: true, id: exp.id });
+    } catch (error) {
+      res.status(400).json({ success: false, message: "Invalid experience data", error });
+    }
+  });
+
+  app.patch("/api/experiences/:id", requireAuth, async (req, res) => {
+    try {
+      const exp = await storage.updateExperience(parseInt(req.params.id), req.body);
+      if (!exp) return res.status(404).json({ success: false, message: "Experience not found" });
+      res.json({ success: true, exp });
+    } catch (error) {
+      res.status(400).json({ success: false, message: "Update failed", error });
+    }
+  });
+
+  app.delete("/api/experiences/:id", requireAuth, async (req, res) => {
+    try {
+      const success = await storage.deleteExperience(parseInt(req.params.id));
+      if (!success) return res.status(404).json({ success: false, message: "Experience not found" });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Delete failed" });
     }
   });
 

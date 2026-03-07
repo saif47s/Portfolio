@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Award, Cloud, Bug, Tag } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { type SiteSettings } from "@shared/schema";
 
 const stats = [
   { label: "Experience", value: "5+ Years", color: "text-cyber-blue" },
@@ -37,6 +39,35 @@ const certifications = [
 ];
 
 export default function About() {
+  const { data: settings, isLoading } = useQuery<SiteSettings>({
+    queryKey: ["/api/settings"],
+  });
+
+  const dynamicStats = [
+    { label: "Experience", value: settings?.statsExperience || "5+ Years", color: "text-cyber-blue" },
+    { label: "Projects Completed", value: settings?.statsProjects || "50+", color: "text-cyber-green" },
+    { label: "Certifications", value: settings?.statsCertifications || "8", color: "text-cyber-purple" },
+    { label: "Security Incidents", value: settings?.statsSecurityIncidents || "100+", color: "text-cyber-yellow" }
+  ];
+
+  if (isLoading) {
+    return (
+      <section className="py-20 bg-cyber-secondary animate-pulse">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="h-8 bg-gray-700 w-1/4 rounded mb-8"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="space-y-4">
+              <div className="h-4 bg-gray-700 w-full rounded"></div>
+              <div className="h-4 bg-gray-700 w-full rounded"></div>
+              <div className="h-4 bg-gray-700 w-2/3 rounded"></div>
+            </div>
+            <div className="h-64 bg-gray-700 rounded-2xl"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="about" className="py-20 bg-cyber-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,22 +78,13 @@ export default function About() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold text-white mb-6">About Me</h2>
-            <p className="text-lg text-gray-300 mb-6">
-              I'm Saif, a passionate multi-disciplinary technology expert with certifications across 
-              cybersecurity, cloud engineering, AI prompting, and full-stack development. Currently 
-              working on NetSec - a comprehensive networking scanning application for device discovery 
-              and management.
-            </p>
-            <p className="text-lg text-gray-300 mb-8">
-              My expertise spans from securing digital landscapes and network engineering to creating 
-              intuitive UI/UX designs and transforming data into actionable insights. I'm always 
-              learning and currently expanding my backend development skills while collaborating on 
-              innovative tech projects.
-            </p>
-            
+            <h2 className="text-4xl font-bold text-white mb-6 font-cyber">About Me</h2>
+            <div className="space-y-6 text-lg text-gray-300 mb-8 whitespace-pre-wrap">
+              {settings?.aboutMe}
+            </div>
+
             <div className="grid grid-cols-2 gap-6 mb-8">
-              {stats.map((stat, index) => (
+              {dynamicStats.map((stat, index) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 20 }}
@@ -76,7 +98,7 @@ export default function About() {
               ))}
             </div>
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -84,19 +106,19 @@ export default function About() {
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="relative z-10 bg-gradient-to-r from-cyber-blue to-cyber-green p-1 rounded-2xl">
-              <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                alt="Cybersecurity professional at work" 
-                className="rounded-2xl w-full"
+            <div className="relative z-10 bg-gradient-to-r from-cyber-blue to-cyber-green p-1 rounded-2xl overflow-hidden aspect-video lg:aspect-square">
+              <img
+                src={settings?.aboutImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"}
+                alt="Cybersecurity professional at work"
+                className="rounded-2xl w-full h-full object-cover"
               />
             </div>
             <div className="absolute -inset-4 bg-gradient-to-r from-cyber-blue to-cyber-green rounded-2xl blur opacity-20"></div>
           </motion.div>
         </div>
-        
+
         {/* Certifications */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}

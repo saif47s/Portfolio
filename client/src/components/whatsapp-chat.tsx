@@ -18,7 +18,7 @@ export default function WhatsAppChat() {
 
   const sendWhatsAppMessage = (text: string) => {
     // Note: Replace with your actual WhatsApp number in international format (without + sign)
-    const phoneNumber = "1234567890"; // Replace with your actual WhatsApp number
+    const phoneNumber = "03325909163"; // Replace with your actual WhatsApp number
     const encodedMessage = encodeURIComponent(`Hello Saif! ${text}`);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
@@ -75,7 +75,7 @@ export default function WhatsAppChat() {
                   </Button>
                 </div>
               </div>
-              
+
               <CardContent className="p-4">
                 <div className="mb-4">
                   <div className="bg-muted p-3 rounded-lg text-sm mb-3">
@@ -83,7 +83,7 @@ export default function WhatsAppChat() {
                     <p>How can I help you today? Choose from options below or send a custom message.</p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2 mb-4">
                   {predefinedMessages.map((msg, index) => (
                     <Button
@@ -97,7 +97,7 @@ export default function WhatsAppChat() {
                     </Button>
                   ))}
                 </div>
-                
+
                 <div className="flex gap-2">
                   <input
                     type="text"

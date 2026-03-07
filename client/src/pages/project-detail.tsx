@@ -7,63 +7,18 @@ import { useParams, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 
 // Static project data - in real app this would come from API
-const projectsData = [
-  {
-    id: 1,
-    title: "NetSec - Network Scanning App",
-    description: "Currently developing a comprehensive networking scanning application for device discovery and management. Features network mapping, device identification, and security analysis tools.",
-    fullDescription: `This is a comprehensive network scanning application designed for cybersecurity professionals and network administrators. The application provides advanced device discovery, security analysis, and network mapping capabilities.
-
-Key Features:
-• Advanced port scanning with customizable speed and stealth options
-• Network topology mapping with visual representation
-• Device fingerprinting and OS detection
-• Vulnerability assessment integration
-• Real-time monitoring and alerting
-• Export capabilities for reports and documentation
-
-The application is built using Python with a modern GUI framework, ensuring cross-platform compatibility and ease of use. It integrates with popular security tools and provides extensible plugin architecture for custom functionality.`,
-    category: "Network Engineering",
-    year: "2025",
-    technologies: ["Python", "Network Protocols", "Security Analysis", "Device Management"],
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
-    categoryColor: "bg-cyber-blue",
-    status: "In Development",
-    githubUrl: "https://github.com/saif/netsec",
-    liveUrl: null
-  },
-  {
-    id: 2,
-    title: "Data Analysis & Visualization Platform",
-    description: "Advanced data analysis platform with interactive visualizations, transforming complex datasets into actionable business insights using modern analytics techniques.",
-    fullDescription: `A comprehensive data analysis and visualization platform designed to help businesses make data-driven decisions. The platform combines powerful analytics capabilities with intuitive visualizations.
-
-Key Features:
-• Interactive dashboard creation with drag-and-drop interface
-• Real-time data processing and analysis
-• Advanced statistical analysis and machine learning integration
-• Custom visualization types and charts
-• Collaborative sharing and reporting features
-• API integration for external data sources
-
-Built with modern web technologies and designed for scalability, this platform serves businesses of all sizes looking to leverage their data for competitive advantage.`,
-    category: "Data Analysis",
-    year: "2024",
-    technologies: ["Python", "Data Visualization", "Analytics", "Business Intelligence"],
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
-    categoryColor: "bg-cyber-green",
-    status: "Completed",
-    githubUrl: "https://github.com/saif/data-platform",
-    liveUrl: "https://data-platform.demo.com"
-  }
-];
+import { useQuery } from "@tanstack/react-query";
+import { type Project } from "@shared/schema";
+import { Loader2 } from "lucide-react";
 
 export default function ProjectDetail() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  const project = projectsData.find(p => p.id === parseInt(id || '0'));
+  const { data: project, isLoading, error } = useQuery<Project>({
+    queryKey: [`/api/projects/${id}`],
+  });
 
   const handleShare = async () => {
     if (navigator.share && project) {
@@ -83,35 +38,45 @@ export default function ProjectDetail() {
     } else {
       await navigator.clipboard.writeText(window.location.href);
       toast({
-        title: "Link Copied", 
+        title: "Link Copied",
         description: "Project link copied to clipboard",
       });
     }
   };
 
   const handleGithubView = () => {
-    if (project?.githubUrl) {
-      window.open(project.githubUrl, '_blank');
+    if (project?.githubLink) {
+      window.open(project.githubLink, '_blank');
     } else {
       toast({
-        title: "Coming Soon",
-        description: "GitHub repository will be available soon",
+        title: "Link unavailable",
+        description: "GitHub repository link is not provided.",
+        variant: "destructive"
       });
     }
   };
 
   const handleLiveView = () => {
-    if (project?.liveUrl) {
-      window.open(project.liveUrl, '_blank');
+    if (project?.liveLink) {
+      window.open(project.liveLink, '_blank');
     } else {
       toast({
-        title: "Coming Soon",
-        description: "Live demo will be available soon",
+        title: "Link unavailable",
+        description: "Live demo link is not provided.",
+        variant: "destructive"
       });
     }
   };
 
-  if (!project) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-cyber-dark flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-cyber-blue" />
+      </div>
+    );
+  }
+
+  if (error || !project) {
     return (
       <div className="min-h-screen bg-cyber-dark flex items-center justify-center">
         <div className="text-center">
@@ -133,8 +98,8 @@ export default function ProjectDetail() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={() => setLocation('/projects')}
             className="mb-8 text-gray-400 hover:text-white"
           >
@@ -143,8 +108,8 @@ export default function ProjectDetail() {
           </Button>
 
           <div className="relative mb-8">
-            <img 
-              src={project.image} 
+            <img
+              src={project.image}
               alt={project.title}
               className="w-full h-96 object-cover rounded-lg"
             />
@@ -174,7 +139,7 @@ export default function ProjectDetail() {
           </div>
 
           <h1 className="text-4xl font-bold text-white mb-6">{project.title}</h1>
-          
+
           <div className="flex flex-wrap gap-2 mb-8">
             {project.technologies.map((tech) => (
               <Badge key={tech} variant="secondary" className="bg-gray-700 text-gray-300 text-sm">
@@ -185,24 +150,24 @@ export default function ProjectDetail() {
 
           <Card className="bg-cyber-secondary border-gray-700 mb-8">
             <CardContent className="p-8">
-              <div 
+              <div
                 className="prose prose-lg max-w-none text-gray-300"
                 style={{ whiteSpace: 'pre-line' }}
               >
-                {project.fullDescription}
+                {project.description}
               </div>
             </CardContent>
           </Card>
 
           <div className="flex gap-4 justify-center">
-            <Button 
+            <Button
               className="bg-cyber-blue hover:bg-cyber-blue/80 text-white"
               onClick={handleGithubView}
             >
               <Github className="mr-2 h-4 w-4" />
               View Code
             </Button>
-            <Button 
+            <Button
               variant="outline"
               className="border-cyber-green text-cyber-green hover:bg-cyber-green hover:text-white"
               onClick={handleLiveView}
@@ -210,7 +175,7 @@ export default function ProjectDetail() {
               <ExternalLink className="mr-2 h-4 w-4" />
               Live Demo
             </Button>
-            <Button 
+            <Button
               variant="outline"
               className="border-gray-600 text-gray-300 hover:bg-gray-700"
             >
