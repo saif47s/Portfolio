@@ -23,9 +23,9 @@ import fs from "fs";
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: 'dzu9lk0n6',
-  api_key: '919934666692768',
-  api_secret: '9VyTaKHW9WnfWwct5fqOcyJRyp0'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || '',
+  api_key: process.env.CLOUDINARY_API_KEY || '',
+  api_secret: process.env.CLOUDINARY_API_SECRET || ''
 });
 
 // Configure multer for file uploads
