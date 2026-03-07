@@ -19,8 +19,10 @@ export function setupAuth(app: Express) {
         store: storage.sessionStore,
         cookie: {
             maxAge: 24 * 60 * 60 * 1000,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            // In cloud environments like Hugging Face, 'secure: true' might fail if HTTPS is handled by a proxy.
+            // Using a more flexible check here.
+            secure: process.env.NODE_ENV === "production" && process.env.REQUIRE_SECURE_COOKIES === "true",
+            sameSite: "lax",
         },
     };
 
