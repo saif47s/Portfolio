@@ -32,7 +32,8 @@ export default function ImageUpload({ value, onChange, label }: ImageUploadProps
         formData.append("file", file);
 
         try {
-            const res = await fetch("/api/upload", {
+            const apiUrl = import.meta.env.VITE_API_URL || "";
+            const res = await fetch(`${apiUrl}/api/upload`, {
                 method: "POST",
                 body: formData,
                 credentials: "include",
