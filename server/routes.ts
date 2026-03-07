@@ -22,11 +22,17 @@ import path from "path";
 import fs from "fs";
 
 // Configure Cloudinary
-cloudinary.config({
+const cloudinaryConfig = {
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || '',
   api_key: process.env.CLOUDINARY_API_KEY || '',
   api_secret: process.env.CLOUDINARY_API_SECRET || ''
-});
+};
+
+if (!cloudinaryConfig.cloud_name || !cloudinaryConfig.api_key || !cloudinaryConfig.api_secret) {
+  console.warn("WARNING: Cloudinary credentials are not fully set in environment variables. Image uploads will fail.");
+}
+
+cloudinary.config(cloudinaryConfig);
 
 // Configure multer for file uploads
 const uploadStorage = multer.memoryStorage();
