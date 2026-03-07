@@ -3,6 +3,10 @@ import cors from "cors";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+if (process.env.NODE_ENV === "production") {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -164,7 +168,7 @@ app.use((req, res, next) => {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS security_answer TEXT;
     `;
     await pool.query(alterTableSql);
-    log("Database tables verified/created");
+    log("Database tables verified/created (SSL Fix V2)");
   } catch (err) {
     console.error("Database initialization failed:", err);
   }
