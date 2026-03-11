@@ -8,10 +8,15 @@ import { ExternalLink, Github, FileText, Calendar, Filter } from "lucide-react";
 import { SkeletonCard } from "@/components/loading-spinner";
 import { Project } from "@shared/schema";
 
+import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
+
 const categories = ["All", "Cybersecurity", "Network Engineering", "Cloud Engineering", "Data Analysis", "Mobile Development", "UI/UX Design", "AI & Prompting", "Database Management"];
 
 export default function ProjectsFilter() {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
 
   const { data: projects, isLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
@@ -25,6 +30,34 @@ export default function ProjectsFilter() {
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
+  };
+
+  const handleViewDetails = (id: number) => {
+    setLocation(`/project/${id}`);
+  };
+
+  const handleGithubView = (project: Project) => {
+    if (project.githubLink) {
+      window.open(project.githubLink, '_blank');
+    } else {
+      toast({
+        title: "Link unavailable",
+        description: "GitHub link is not provided for this project.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleLiveView = (project: Project) => {
+    if (project.liveLink) {
+      window.open(project.liveLink, '_blank');
+    } else {
+      toast({
+        title: "Link unavailable",
+        description: "Live demo link is not provided.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -121,6 +154,7 @@ export default function ProjectsFilter() {
                         variant="ghost"
                         size="sm"
                         className="text-primary hover:text-primary/80 transition-colors p-0"
+                        onClick={() => handleViewDetails(project.id)}
                       >
                         <ExternalLink className="mr-1 h-4 w-4" />
                         View Details
@@ -130,6 +164,7 @@ export default function ProjectsFilter() {
                           variant="ghost"
                           size="sm"
                           className="text-muted-foreground hover:text-foreground transition-colors p-2"
+                          onClick={() => handleGithubView(project)}
                         >
                           <Github className="h-4 w-4" />
                         </Button>
@@ -137,6 +172,7 @@ export default function ProjectsFilter() {
                           variant="ghost"
                           size="sm"
                           className="text-muted-foreground hover:text-foreground transition-colors p-2"
+                          onClick={() => handleLiveView(project)}
                         >
                           <FileText className="h-4 w-4" />
                         </Button>
@@ -156,7 +192,10 @@ export default function ProjectsFilter() {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-8">
+          <Button 
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-8"
+            onClick={() => setLocation('/projects')}
+          >
             View All Projects
           </Button>
         </motion.div>

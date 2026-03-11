@@ -94,3 +94,6 @@ Your complete portfolio code is ready for download!
 
 
 https://saiff47-saif-api.hf.space/admin
+https://saiff47-saif-api.hf.space/
+https://msaif-portfolio.netlify.app/#
+https://msaif-portfolio.netlify.app/auth

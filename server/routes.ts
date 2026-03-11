@@ -223,9 +223,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: error.errors
         });
       } else {
+        console.error("Testimonial creation error:", error);
         res.status(500).json({
           success: false,
-          message: "Internal server error"
+          message: error instanceof Error ? error.message : "Internal server error"
         });
       }
     }
@@ -279,7 +280,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { credentialId, issuer } = req.body;
 
-      // Simulate credential verification process
+      // Check if we have this certification in DB with a direct verifyLink
+      const certifications = await storage.getCertifications();
+      const dbCert = certifications.find(c => c.credentialId === credentialId);
+
+      if (dbCert?.verifyLink) {
+        return res.json({
+          success: true,
+          verified: true,
+          message: "Credential verified from database",
+          verificationUrl: dbCert.verifyLink,
+          issuer: issuer,
+          status: dbCert.status || "Active"
+        });
+      }
+
+      // Fallback: Simulate credential verification process for demo/hardcoded items
       const verificationLinks = {
         "ECC-1234567": "https://cert.eccouncil.org/application/search-verify",
         "AWS-SEC-789": "https://www.credly.com/badges/aws-certified-security-specialty",
@@ -308,6 +324,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
     } catch (error) {
+      console.error("Verification error:", error);
       res.status(500).json({
         success: false,
         message: "Verification service temporarily unavailable"

@@ -141,7 +141,13 @@ export default function Certifications() {
                     variant="outline"
                     size="sm"
                     className="w-full text-primary border-primary hover:bg-primary hover:text-primary-foreground"
-                    onClick={() => handleVerifyCredential(cert.credentialId || "", cert.issuer)}
+                    onClick={() => {
+                      if (cert.verifyLink) {
+                        window.open(cert.verifyLink, '_blank');
+                      } else {
+                        handleVerifyCredential(cert.credentialId || "", cert.issuer);
+                      }
+                    }}
                     disabled={!!cert.credentialId && verifyingIds.has(cert.credentialId)}
                   >
                     {cert.credentialId && verifyingIds.has(cert.credentialId) ? (
