@@ -12,11 +12,37 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Mail, User, MessageSquare, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { Trash2 } from "lucide-react";
 
 export default function AdminMessages() {
     const { data: messages, isLoading } = useQuery<any[]>({
         queryKey: ["/api/contact"],
     });
+
+    const { toast } = useToast();
+
+    const deleteMutation = useMutation({
+        mutationFn: async (id: number) => {
+            await apiRequest("DELETE", `/api/contact/${id}`);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["/api/contact"] });
+            toast({
+                title: "Message deleted",
+                description: "The contact message has been removed.",
+            });
+        },
+    });
+
+    const handleDelete = (id: number) => {
+        if (confirm("Are you sure you want to delete this message?")) {
+            deleteMutation.mutate(id);
+        }
+    };
 
     return (
         <AdminLayout>
@@ -48,6 +74,7 @@ export default function AdminMessages() {
                                             <TableHead className="w-[250px]">Contact Info</TableHead>
                                             <TableHead>Service / Message</TableHead>
                                             <TableHead className="text-right">Date</TableHead>
+                                            <TableHead className="w-[80px] text-right">Action</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -91,6 +118,17 @@ export default function AdminMessages() {
                                                         </span>
                                                         <span>{message.createdAt && format(new Date(message.createdAt), "h:mm a")}</span>
                                                     </div>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="text-muted-foreground hover:text-destructive transition-colors"
+                                                        onClick={() => handleDelete(message.id)}
+                                                        disabled={deleteMutation.isPending}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
                                                 </TableCell>
                                             </TableRow>
                                         ))}

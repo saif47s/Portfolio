@@ -204,6 +204,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/contact/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteContactSubmission(id);
+      if (success) res.sendStatus(204);
+      else res.status(404).send("Message not found");
+    } catch (error) {
+      console.error("Message deletion error:", error);
+      res.status(500).json({ success: false, message: "Failed to delete message" });
+    }
+  });
+
   // Testimonial submission
   app.post("/api/testimonials", async (req, res) => {
     try {
@@ -243,6 +256,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false,
         message: "Failed to retrieve testimonials"
       });
+    }
+  });
+
+  app.patch("/api/testimonials/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    try {
+      const id = parseInt(req.params.id);
+      const update = req.body;
+      const updated = await storage.updateTestimonial(id, update);
+      if (updated) res.json(updated);
+      else res.status(404).send("Testimonial not found");
+    } catch (error) {
+      console.error("Testimonial update error:", error);
+      res.status(500).json({ success: false, message: "Failed to update testimonial" });
+    }
+  });
+
+  app.delete("/api/testimonials/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteTestimonial(id);
+      if (success) res.sendStatus(204);
+      else res.status(404).send("Testimonial not found");
+    } catch (error) {
+      console.error("Testimonial deletion error:", error);
+      res.status(500).json({ success: false, message: "Failed to delete testimonial" });
     }
   });
 

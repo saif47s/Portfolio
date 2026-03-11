@@ -182,6 +182,7 @@ export const siteSettings = pgTable("site_settings", {
   githubUrl: text("github_url").notNull().default(""),
   twitterUrl: text("twitter_url").notNull().default(""),
   mediumUrl: text("medium_url").notNull().default(""),
+  whatsappNumber: text("whatsapp_number").notNull().default("03325909163"),
   footerBrandName: text("footer_brand_name").notNull().default("Saif"),
   footerBrandSubtitle: text("footer_brand_subtitle").notNull().default("Multi-Tech Expert"),
   footerDescription: text("footer_description").notNull().default("Expert in Cybersecurity, Cloud Engineering, AI Prompting, Data Analysis, and Full-Stack Development."),

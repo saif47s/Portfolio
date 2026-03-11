@@ -40,6 +40,7 @@ export default function AdminSettings() {
             githubUrl: "",
             twitterUrl: "",
             mediumUrl: "",
+            whatsappNumber: "",
             footerBrandName: "",
             footerBrandSubtitle: "",
             footerDescription: "",
@@ -498,6 +499,20 @@ export default function AdminSettings() {
                                                         <FormControl>
                                                             <Input placeholder="https://medium.com/@..." {...field} />
                                                         </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="whatsappNumber"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>WhatsApp Number (Intl format)</FormLabel>
+                                                        <FormControl>
+                                                            <Input placeholder="03325909163" {...field} />
+                                                        </FormControl>
+                                                        <FormDescription>Format: 03123456789 or international format without + sign.</FormDescription>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}

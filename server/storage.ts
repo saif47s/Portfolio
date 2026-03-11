@@ -28,9 +28,12 @@ export interface IStorage {
 
   createContactSubmission(contact: InsertContact): Promise<Contact>;
   getContactSubmissions(): Promise<Contact[]>;
+  deleteContactSubmission(id: number): Promise<boolean>;
 
   createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial>;
   getTestimonials(approved?: boolean): Promise<Testimonial[]>;
+  updateTestimonial(id: number, testimonial: Partial<InsertTestimonial>): Promise<Testimonial | undefined>;
+  deleteTestimonial(id: number): Promise<boolean>;
 
   createBlogPost(blogPost: InsertBlogPost): Promise<BlogPost>;
   getBlogPosts(published?: boolean): Promise<BlogPost[]>;
@@ -103,7 +106,8 @@ export class DatabaseStorage implements IStorage {
         { name: 'footer_description', type: 'text', default: "'Expert in Cybersecurity, Cloud Engineering, AI Prompting, Data Analysis, and Full-Stack Development.'" },
         { name: 'footer_services', type: 'text', default: '\'["Cybersecurity Services","Cloud Engineering","UI/UX Design","Data Analysis & AI","Mobile Development","Network Engineering"]\'' },
         { name: 'footer_quick_links', type: 'text', default: '\'[{"name":"Home","href":"#home"},{"name":"Skills","href":"#skills"},{"name":"Projects","href":"#projects"},{"name":"Contact","href":"#contact"}]\' ' },
-        { name: 'footer_copyright', type: 'text', default: "'© 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide.'" }
+        { name: 'footer_copyright', type: 'text', default: "'© 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide.'" },
+        { name: 'whatsapp_number', type: 'text', default: "'03325909163'" }
       ];
 
       for (const col of columnsToAdd) {
@@ -203,6 +207,7 @@ export class DatabaseStorage implements IStorage {
         githubUrl: "",
         twitterUrl: "",
         mediumUrl: "",
+        whatsappNumber: "03325909163",
         footerBrandName: "Saif",
         footerBrandSubtitle: "Multi-Tech Expert",
         footerDescription: "Expert in Cybersecurity, Cloud Engineering, AI Prompting, Data Analysis, and Full-Stack Development.",
@@ -253,6 +258,11 @@ export class DatabaseStorage implements IStorage {
   async getContactSubmissions(): Promise<Contact[]> {
     return await db.select().from(contactSubmissions).orderBy(desc(contactSubmissions.createdAt));
   }
+  
+  async deleteContactSubmission(id: number): Promise<boolean> {
+    const [deleted] = await db.delete(contactSubmissions).where(eq(contactSubmissions.id, id)).returning();
+    return !!deleted;
+  }
 
   async createTestimonial(insertTestimonial: InsertTestimonial): Promise<Testimonial> {
     const [testimonial] = await db.insert(testimonials).values(insertTestimonial).returning();
@@ -264,6 +274,16 @@ export class DatabaseStorage implements IStorage {
       return await db.select().from(testimonials).where(eq(testimonials.approved, approved)).orderBy(desc(testimonials.submittedAt));
     }
     return await db.select().from(testimonials).orderBy(desc(testimonials.submittedAt));
+  }
+
+  async updateTestimonial(id: number, testimonialUpdate: Partial<InsertTestimonial>): Promise<Testimonial | undefined> {
+    const [updated] = await db.update(testimonials).set(testimonialUpdate).where(eq(testimonials.id, id)).returning();
+    return updated;
+  }
+
+  async deleteTestimonial(id: number): Promise<boolean> {
+    const [deleted] = await db.delete(testimonials).where(eq(testimonials.id, id)).returning();
+    return !!deleted;
   }
 
   async createBlogPost(insertBlogPost: InsertBlogPost): Promise<BlogPost> {

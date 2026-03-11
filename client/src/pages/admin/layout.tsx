@@ -14,6 +14,7 @@ import {
     LogOut,
     Menu,
     ChevronLeft,
+    MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
     { href: "/admin/skills", label: "Skills", icon: Code2 },
     { href: "/admin/experience", label: "Experience", icon: FileText },
     { href: "/admin/certifications", label: "Certifications", icon: Award },
+    { href: "/admin/testimonials", label: "Testimonials", icon: MessageCircle },
     { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

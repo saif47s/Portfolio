@@ -3,10 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle, X, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { SiteSettings } from "@shared/schema";
 
 export default function WhatsAppChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
+
+  const { data: settings } = useQuery<SiteSettings>({
+    queryKey: ["/api/settings"],
+  });
 
   const predefinedMessages = [
     "Hi! I'd like to discuss a cybersecurity project",
@@ -17,8 +23,7 @@ export default function WhatsAppChat() {
   ];
 
   const sendWhatsAppMessage = (text: string) => {
-    // Note: Replace with your actual WhatsApp number in international format (without + sign)
-    const phoneNumber = "03325909163"; // Replace with your actual WhatsApp number
+    const phoneNumber = settings?.whatsappNumber || "03325909163";
     const encodedMessage = encodeURIComponent(`Hello Saif! ${text}`);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');

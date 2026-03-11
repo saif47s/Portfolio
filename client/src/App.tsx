@@ -26,6 +26,7 @@ import AdminMessages from "@/pages/admin/messages";
 import AdminBlogs from "@/pages/admin/blogs";
 import AdminSettings from "@/pages/admin/settings";
 import AdminProfile from "@/pages/admin/profile";
+import AdminTestimonials from "@/pages/admin/testimonials";
 
 function Router() {
   return (
@@ -45,6 +46,7 @@ function Router() {
       <ProtectedRoute path="/admin/experience" component={AdminExperience} />
       <ProtectedRoute path="/admin/certifications" component={AdminCertifications} />
       <ProtectedRoute path="/admin/messages" component={AdminMessages} />
+      <ProtectedRoute path="/admin/testimonials" component={AdminTestimonials} />
       <ProtectedRoute path="/admin/blogs" component={AdminBlogs} />
       <ProtectedRoute path="/admin/settings" component={AdminSettings} />
 
