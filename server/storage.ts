@@ -95,78 +95,54 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log('--- STARTING DATABASE SCHEMA VERIFICATION ---');
       const columnsToAdd = [
-        { name: 'navbar_brand_name', type: 'text', default: "'Saif Portfolio'" },
-        { name: 'about_image', type: 'text', default: "''" },
-        { name: 'stats_experience', type: 'text', default: "'5+ Years'" },
-        { name: 'stats_projects', type: 'text', default: "'50+'" },
-        { name: 'stats_certifications', type: 'text', default: "'8'" },
-        { name: 'stats_security_incidents', type: 'text', default: "'100+'" },
-        { name: 'footer_brand_name', type: 'text', default: "'Saif'" },
-        { name: 'footer_brand_subtitle', type: 'text', default: "'Multi-Tech Expert'" },
-        { name: 'footer_description', type: 'text', default: "'Expert in Cybersecurity, Cloud Engineering, AI Prompting, Data Analysis, and Full-Stack Development.'" },
-        { name: 'footer_services', type: 'text', default: '\'["Cybersecurity Services","Cloud Engineering","UI/UX Design","Data Analysis & AI","Mobile Development","Network Engineering"]\'' },
-        { name: 'footer_quick_links', type: 'text', default: '\'[{"name":"Home","href":"#home"},{"name":"Skills","href":"#skills"},{"name":"Projects","href":"#projects"},{"name":"Contact","href":"#contact"}]\' ' },
-        { name: 'footer_copyright', type: 'text', default: "'© 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide.'" },
-        { name: 'whatsapp_number', type: 'text', default: "'03325909163'" }
+        { name: 'navbar_brand_name', type: 'text', defaultValue: "'Saif Portfolio'" },
+        { name: 'about_image', type: 'text', defaultValue: "''" },
+        { name: 'stats_experience', type: 'text', defaultValue: "'5+ Years'" },
+        { name: 'stats_projects', type: 'text', defaultValue: "'50+'" },
+        { name: 'stats_certifications', type: 'text', defaultValue: "'8'" },
+        { name: 'stats_security_incidents', type: 'text', defaultValue: "'100+'" },
+        { name: 'footer_brand_name', type: 'text', defaultValue: "'Saif'" },
+        { name: 'footer_brand_subtitle', type: 'text', defaultValue: "'Multi-Tech Expert'" },
+        { name: 'footer_description', type: 'text', defaultValue: "'Expert in Cybersecurity, Cloud Engineering, AI Prompting, Data Analysis, and Full-Stack Development.'" },
+        { name: 'footer_services', type: 'text', defaultValue: '\'["Cybersecurity Services","Cloud Engineering","UI/UX Design","Data Analysis & AI","Mobile Development","Network Engineering"]\'' },
+        { name: 'footer_quick_links', type: 'text', defaultValue: '\'[{"name":"Home","href":"#home"},{"name":"Skills","href":"#skills"},{"name":"Projects","href":"#projects"},{"name":"Contact","href":"#contact"}]\' ' },
+        { name: 'footer_copyright', type: 'text', defaultValue: "'© 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide.'" },
+        { name: 'whatsapp_number', type: 'text', defaultValue: "'03325909163'" }
       ];
 
       for (const col of columnsToAdd) {
         try {
-          console.log(`Verifying column: ${col.name}`);
-          // Using a more robust check that doesn't rely on DO block if it fails for some reason
-          const checkQuery = `
-            SELECT 1 
-            FROM information_schema.columns 
-            WHERE table_name='site_settings' AND column_name='${col.name}';
-          `;
+          const checkQuery = `SELECT 1 FROM information_schema.columns WHERE table_name='site_settings' AND column_name='${col.name}';`;
           const exists = await pool.query(checkQuery);
 
           if (exists.rowCount === 0) {
-            console.log(`Column ${col.name} is missing. Adding...`);
-            await pool.query(`ALTER TABLE site_settings ADD COLUMN ${col.name} ${col.type} NOT NULL DEFAULT ${col.default};`);
-            console.log(`Successfully added column: ${col.name}`);
-          } else {
-            console.log(`Column ${col.name} exists.`);
+            console.log(`Adding missing column: ${col.name}`);
+            await pool.query(`ALTER TABLE site_settings ADD COLUMN ${col.name} ${col.type} NOT NULL DEFAULT ${col.defaultValue};`);
           }
         } catch (err: any) {
-          console.error(`FAILED to process column ${col.name}:`, err.message);
+          console.error(`Error adding column ${col.name}:`, err.message);
         }
       }
-      }
 
-      // Ensure testimonials table exists
-      try {
-        console.log("Verifying testimonials table existence...");
-        const tableCheck = await pool.query(`
-          SELECT 1 
-          FROM information_schema.tables 
-          WHERE table_name = 'testimonials';
+      // Check testimonials table existence
+      const tableCheck = await pool.query(`SELECT 1 FROM information_schema.tables WHERE table_name = 'testimonials';`);
+      if (tableCheck.rowCount === 0) {
+        console.log("Creating missing testimonials table...");
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS testimonials (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            company TEXT,
+            position TEXT,
+            rating INTEGER NOT NULL,
+            testimonial TEXT NOT NULL,
+            project TEXT,
+            approved BOOLEAN DEFAULT FALSE,
+            submitted_at TIMESTAMP DEFAULT NOW()
+          );
         `);
-        
-        if (tableCheck.rowCount === 0) {
-          console.log("Testimonials table is missing. Creating...");
-          await pool.query(`
-            CREATE TABLE IF NOT EXISTS testimonials (
-              id SERIAL PRIMARY KEY,
-              name TEXT NOT NULL,
-              email TEXT NOT NULL,
-              company TEXT,
-              position TEXT,
-              rating INTEGER NOT NULL,
-              testimonial TEXT NOT NULL,
-              project TEXT,
-              approved BOOLEAN DEFAULT FALSE,
-              submitted_at TIMESTAMP DEFAULT NOW()
-            );
-          `);
-          console.log("Testimonials table created successfully.");
-        } else {
-          console.log("Testimonials table exists.");
-        }
-      } catch (err: any) {
-        console.error("FAILED to verify/create testimonials table:", err.message);
       }
-
       console.log('--- DATABASE SCHEMA VERIFICATION COMPLETE ---');
     } catch (error: any) {
       console.error('CRITICAL: Error during schema verification:', error.message);
@@ -180,6 +156,8 @@ export class DatabaseStorage implements IStorage {
         await this.createUser({
           username: "admin",
           password: "admin123",
+          securityQuestion: "What is your favorite color?",
+          securityAnswer: "blue"
         });
         console.log("Persistent Admin user created: admin / admin123");
       }
@@ -223,7 +201,6 @@ export class DatabaseStorage implements IStorage {
   async getSiteSettings(): Promise<SiteSettings> {
     const [settings] = await db.select().from(siteSettings);
     if (!settings) {
-      // Fallback if somehow not seeded
       return {
         id: 1,
         navbarBrandName: "Saif Portfolio",
@@ -261,7 +238,6 @@ export class DatabaseStorage implements IStorage {
       return newSettings;
     }
     const [updated] = await db.update(siteSettings).set(update).where(eq(siteSettings.id, settings.id)).returning();
-    console.log("Site settings updated in DB:", JSON.stringify(update));
     return updated;
   }
 
@@ -348,7 +324,6 @@ export class DatabaseStorage implements IStorage {
     return !!deleted;
   }
 
-  // Projects
   async getProjects(): Promise<Project[]> {
     return await db.select().from(projects);
   }
@@ -373,7 +348,6 @@ export class DatabaseStorage implements IStorage {
     return !!deleted;
   }
 
-  // Skills
   async getSkills(): Promise<Skill[]> {
     return await db.select().from(skills);
   }
@@ -398,7 +372,6 @@ export class DatabaseStorage implements IStorage {
     return !!deleted;
   }
 
-  // Certifications
   async getCertifications(): Promise<Certification[]> {
     return await db.select().from(certifications);
   }
@@ -423,7 +396,6 @@ export class DatabaseStorage implements IStorage {
     return !!deleted;
   }
 
-  // Experiences
   async getExperiences(): Promise<Experience[]> {
     return await db.select().from(experiences).orderBy(desc(experiences.id));
   }

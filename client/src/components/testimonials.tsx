@@ -122,7 +122,7 @@ export default function Testimonials() {
 
   const onSubmit = async (data: TestimonialFormData) => {
     setIsSubmitting(true);
-    
+
     try {
       const response = await apiRequest('POST', '/api/testimonials', data);
       const result = await response.json();
@@ -133,7 +133,7 @@ export default function Testimonials() {
           description: "Your testimonial has been submitted and will be reviewed before publishing.",
           duration: 5000,
         });
-        
+
         form.reset();
         setIsDialogOpen(false);
       } else {
@@ -152,7 +152,7 @@ export default function Testimonials() {
   return (
     <section className="py-20 bg-cyber-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -163,8 +163,8 @@ export default function Testimonials() {
             <h2 className="text-4xl font-bold text-white">Client Testimonials</h2>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   className="bg-cyber-blue hover:bg-cyber-blue/80 text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -185,10 +185,10 @@ export default function Testimonials() {
                           <FormItem>
                             <FormLabel className="text-gray-300">Name *</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="Your full name" 
+                              <Input
+                                placeholder="Your full name"
                                 className="bg-cyber-dark border-gray-600 text-white"
-                                {...field} 
+                                {...field}
                               />
                             </FormControl>
                             <FormMessage />
@@ -202,11 +202,11 @@ export default function Testimonials() {
                           <FormItem>
                             <FormLabel className="text-gray-300">Email *</FormLabel>
                             <FormControl>
-                              <Input 
+                              <Input
                                 type="email"
-                                placeholder="your@email.com" 
+                                placeholder="your@email.com"
                                 className="bg-cyber-dark border-gray-600 text-white"
-                                {...field} 
+                                {...field}
                               />
                             </FormControl>
                             <FormMessage />
@@ -223,10 +223,10 @@ export default function Testimonials() {
                           <FormItem>
                             <FormLabel className="text-gray-300">Company</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="Company name" 
+                              <Input
+                                placeholder="Company name"
                                 className="bg-cyber-dark border-gray-600 text-white"
-                                {...field} 
+                                {...field}
                               />
                             </FormControl>
                             <FormMessage />
@@ -240,10 +240,10 @@ export default function Testimonials() {
                           <FormItem>
                             <FormLabel className="text-gray-300">Position</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="Your job title" 
+                              <Input
+                                placeholder="Your job title"
                                 className="bg-cyber-dark border-gray-600 text-white"
-                                {...field} 
+                                {...field}
                               />
                             </FormControl>
                             <FormMessage />
@@ -259,10 +259,10 @@ export default function Testimonials() {
                         <FormItem>
                           <FormLabel className="text-gray-300">Project Type</FormLabel>
                           <FormControl>
-                            <Input 
-                              placeholder="e.g., Security Assessment, Web Development" 
+                            <Input
+                              placeholder="e.g., Security Assessment, Web Development"
                               className="bg-cyber-dark border-gray-600 text-white"
-                              {...field} 
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -283,11 +283,10 @@ export default function Testimonials() {
                                   key={star}
                                   type="button"
                                   onClick={() => field.onChange(star)}
-                                  className={`p-1 rounded transition-colors ${
-                                    field.value >= star 
-                                      ? 'text-yellow-400' 
+                                  className={`p-1 rounded transition-colors ${field.value >= star
+                                      ? 'text-yellow-400'
                                       : 'text-gray-500 hover:text-yellow-300'
-                                  }`}
+                                    }`}
                                 >
                                   <Star className="w-6 h-6 fill-current" />
                                 </button>
@@ -306,10 +305,10 @@ export default function Testimonials() {
                         <FormItem>
                           <FormLabel className="text-gray-300">Your Review *</FormLabel>
                           <FormControl>
-                            <Textarea 
-                              placeholder="Share your experience working with Saif..." 
+                            <Textarea
+                              placeholder="Share your experience working with Saif..."
                               className="bg-cyber-dark border-gray-600 text-white min-h-[100px]"
-                              {...field} 
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -349,9 +348,9 @@ export default function Testimonials() {
               </DialogContent>
             </Dialog>
           </div>
-          <p className="text-xl text-gray-400">What clients say about my cybersecurity expertise</p>
+          <p className="text-xl text-gray-400">What clients say about my expertise</p>
         </motion.div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
             <motion.div
@@ -365,8 +364,8 @@ export default function Testimonials() {
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
                     <div className="relative mr-4">
-                      <img 
-                        src={testimonial.photo} 
+                      <img
+                        src={testimonial.photo}
                         alt={testimonial.name}
                         className="w-12 h-12 rounded-full object-cover"
                       />
@@ -378,11 +377,11 @@ export default function Testimonials() {
                       <p className="text-gray-500 text-xs">{testimonial.company}</p>
                     </div>
                   </div>
-                  
+
                   <p className="text-gray-300 italic mb-3 leading-relaxed text-sm">
                     "{testimonial.testimonial}"
                   </p>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex text-yellow-400">
                       {[...Array(testimonial.rating)].map((_, i) => (
