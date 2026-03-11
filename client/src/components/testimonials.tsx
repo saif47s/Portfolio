@@ -25,6 +25,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 const testimonials = [
   {
@@ -123,14 +124,7 @@ export default function Testimonials() {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('/api/testimonials', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
+      const response = await apiRequest('POST', '/api/testimonials', data);
       const result = await response.json();
 
       if (result.success) {
