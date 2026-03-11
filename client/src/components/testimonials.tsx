@@ -142,7 +142,7 @@ export default function Testimonials() {
     } catch (error) {
       toast({
         title: "Submission Failed",
-        description: "Unable to submit testimonial. Please try again.",
+        description: error instanceof Error ? error.message : "Unable to submit testimonial. Please try again.",
         variant: "destructive",
       });
     } finally {

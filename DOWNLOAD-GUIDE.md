@@ -97,3 +97,14 @@ https://saiff47-saif-api.hf.space/admin
 https://saiff47-saif-api.hf.space/
 https://msaif-portfolio.netlify.app/#
 https://msaif-portfolio.netlify.app/auth
+Regarding the CV (PDF) issue: The reason it's failing to load is because the PDF file is missing from the server. I created the public folder, but it is currently empty.
+
+What you need to do:
+
+On your computer, find your CV file.
+Rename it to: resume-saif-tech-expert.pdf
+Copy it into the public folder I created in your project.
+Push it to GitHub and Hugging Face.
+Once the file is in the public folder, the download button will work perfectly!
+
+Try adding a review now—it should work! You can then approve it in the new Admin > Testimonials page.

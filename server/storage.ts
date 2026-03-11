@@ -132,6 +132,41 @@ export class DatabaseStorage implements IStorage {
           console.error(`FAILED to process column ${col.name}:`, err.message);
         }
       }
+      }
+
+      // Ensure testimonials table exists
+      try {
+        console.log("Verifying testimonials table existence...");
+        const tableCheck = await pool.query(`
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'testimonials';
+        `);
+        
+        if (tableCheck.rowCount === 0) {
+          console.log("Testimonials table is missing. Creating...");
+          await pool.query(`
+            CREATE TABLE IF NOT EXISTS testimonials (
+              id SERIAL PRIMARY KEY,
+              name TEXT NOT NULL,
+              email TEXT NOT NULL,
+              company TEXT,
+              position TEXT,
+              rating INTEGER NOT NULL,
+              testimonial TEXT NOT NULL,
+              project TEXT,
+              approved BOOLEAN DEFAULT FALSE,
+              submitted_at TIMESTAMP DEFAULT NOW()
+            );
+          `);
+          console.log("Testimonials table created successfully.");
+        } else {
+          console.log("Testimonials table exists.");
+        }
+      } catch (err: any) {
+        console.error("FAILED to verify/create testimonials table:", err.message);
+      }
+
       console.log('--- DATABASE SCHEMA VERIFICATION COMPLETE ---');
     } catch (error: any) {
       console.error('CRITICAL: Error during schema verification:', error.message);
