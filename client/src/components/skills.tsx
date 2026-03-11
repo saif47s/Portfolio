@@ -79,7 +79,7 @@ export default function Skills() {
         >
           <h2 className="text-4xl font-bold text-white mb-4">Technical Expertise</h2>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Comprehensive cybersecurity skills across multiple domains
+            Comprehensive skills across multiple domains
           </p>
         </motion.div>
 
