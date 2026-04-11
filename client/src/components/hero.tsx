@@ -77,10 +77,16 @@ export default function Hero() {
           <Button
             className="bg-gradient-cyber-primary hover:opacity-90 text-white font-bold py-3 px-8 text-lg shadow-lg shadow-cyber-blue/20"
             onClick={() => {
-              const resumeUrl = settings?.resumeUrl || "/resume-saif-tech-expert.pdf";
+              let resumeUrl = settings?.resumeUrl || "/resume-saif-tech-expert.pdf";
+              
+              // If it's a Cloudinary URL, inject the attachment flag to force download and fix 401
+              if (resumeUrl.includes("res.cloudinary.com")) {
+                resumeUrl = resumeUrl.replace("/upload/", "/upload/fl_attachment/");
+              }
+
               const link = document.createElement('a');
               link.href = resumeUrl;
-              link.setAttribute('download', 'CV_Saif.pdf');
+              link.setAttribute('download', 'Resume_Saif.pdf');
               link.setAttribute('target', '_blank');
               document.body.appendChild(link);
               link.click();
