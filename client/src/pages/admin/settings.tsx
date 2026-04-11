@@ -265,6 +265,25 @@ export default function AdminSettings() {
                                                         </FormItem>
                                                     )}
                                                 />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="resumeUrl"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Resume / CV File (PDF)</FormLabel>
+                                                            <FormControl>
+                                                                <FileUpload
+                                                                    value={field.value}
+                                                                    onChange={field.onChange}
+                                                                    label="Resume File"
+                                                                    accept=".pdf,.doc,.docx"
+                                                                />
+                                                            </FormControl>
+                                                            <FormDescription>Upload your PDF resume here to update the download link on your site.</FormDescription>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
                                             </CardContent>
                                         </Card>
                                     </div>
@@ -301,24 +320,7 @@ export default function AdminSettings() {
                                                         </FormItem>
                                                     )}
                                                 />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="resumeUrl"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Resume / CV File (PDF)</FormLabel>
-                                                            <FormControl>
-                                                                <FileUpload
-                                                                    value={field.value}
-                                                                    onChange={field.onChange}
-                                                                    label="Resume File"
-                                                                    accept=".pdf,.doc,.docx"
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
+
                                                 <FormField
                                                     control={form.control}
                                                     name="statsCertifications"
