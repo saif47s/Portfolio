@@ -79,9 +79,13 @@ export default function Hero() {
             onClick={() => {
               let resumeUrl = settings?.resumeUrl || "/resume-saif-tech-expert.pdf";
               
-              // If it's a Cloudinary URL, inject the attachment flag to force download and fix 401
+              // Handle Cloudinary specific force-download injection
               if (resumeUrl.includes("res.cloudinary.com")) {
-                resumeUrl = resumeUrl.replace("/upload/", "/upload/fl_attachment/");
+                if (resumeUrl.includes("/image/upload/")) {
+                   resumeUrl = resumeUrl.replace("/image/upload/", "/image/upload/fl_attachment/");
+                }
+                // Raw files (/raw/upload/) don't support fl_attachment URL path, 
+                // but the <a> tag's download attribute below will handle them.
               }
 
               const link = document.createElement('a');

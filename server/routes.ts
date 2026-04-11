@@ -78,8 +78,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const cld_upload_stream = cloudinary.uploader.upload_stream(
       {
         folder: "portfolio",
-        resource_type: "auto",
-        format: isPdf ? "pdf" : undefined,
+        resource_type: isPdf ? "raw" : "image",
       },
       (error: any, result: any) => {
         if (result) {
