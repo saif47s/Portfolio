@@ -76,25 +76,28 @@ export default function Hero() {
         >
           <Button
             className="bg-gradient-cyber-primary hover:opacity-90 text-white font-bold py-3 px-8 text-lg shadow-lg shadow-cyber-blue/20"
-            onClick={() => {
-              let resumeUrl = settings?.resumeUrl || "/resume-saif-tech-expert.pdf";
+            onClick={async () => {
+              const resumeUrl = settings?.resumeUrl || "/resume-saif-tech-expert.pdf";
               
-              // Handle Cloudinary specific force-download injection
-              if (resumeUrl.includes("res.cloudinary.com")) {
-                if (resumeUrl.includes("/image/upload/")) {
-                   resumeUrl = resumeUrl.replace("/image/upload/", "/image/upload/fl_attachment/");
-                }
-                // Raw files (/raw/upload/) don't support fl_attachment URL path, 
-                // but the <a> tag's download attribute below will handle them.
+              try {
+                // Fetch the file as a blob to force the browser to treat it as a download
+                const response = await fetch(resumeUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'Resume_Saif.pdf');
+                document.body.appendChild(link);
+                link.click();
+                
+                // Cleanup
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+              } catch (error) {
+                console.error("Download failed, falling back to direct link", error);
+                window.open(resumeUrl, "_blank");
               }
-
-              const link = document.createElement('a');
-              link.href = resumeUrl;
-              link.setAttribute('download', 'Resume_Saif.pdf');
-              link.setAttribute('target', '_blank');
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
             }}
           >
             <Download className="mr-2 h-5 w-5" />
