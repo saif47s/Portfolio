@@ -78,7 +78,13 @@ export default function Hero() {
             className="bg-gradient-cyber-primary hover:opacity-90 text-white font-bold py-3 px-8 text-lg shadow-lg shadow-cyber-blue/20"
             onClick={() => {
               const resumeUrl = settings?.resumeUrl || "/resume-saif-tech-expert.pdf";
-              window.open(resumeUrl, "_blank");
+              const link = document.createElement('a');
+              link.href = resumeUrl;
+              link.setAttribute('download', 'CV_Saif.pdf');
+              link.setAttribute('target', '_blank');
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
             }}
           >
             <Download className="mr-2 h-5 w-5" />
