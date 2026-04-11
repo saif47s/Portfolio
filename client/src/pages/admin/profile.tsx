@@ -89,7 +89,7 @@ export default function AdminProfile() {
             if (currentQuestion !== "What was your first pet's name?" || currentAnswer.toLowerCase() !== "hamza") {
                 toast({
                     title: "Security Rule Violation",
-                    description: "To update password or username, you MUST use 'What was your first pet's name?' with answer 'hamza'.",
+                    description: "Please provide the correct security answer to authorize sensitive changes.",
                     variant: "destructive",
                 });
                 return;

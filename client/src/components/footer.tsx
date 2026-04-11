@@ -133,6 +133,13 @@ export default function Footer() {
           <p className="text-gray-400">
             {settings?.footerCopyright || "© 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide."}
           </p>
+          <div className="flex justify-center mt-3">
+            <img 
+              src="/saif_logo.png" 
+              alt="Saif Logo" 
+              className="w-6 h-6 object-contain opacity-80 hover:opacity-100 transition-opacity"
+            />
+          </div>
         </div>
       </div>
     </footer>

@@ -123,6 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     // If changing password or username, require MASTER SECURITY rule:
     // Question must be "What was your first pet's name?" and Answer must be "hamza"
+    // If changing password or username, require security verification:
     if (newPassword || username !== user.username) {
       const currentQuestion = securityQuestion || user.securityQuestion;
       const currentAnswer = securityAnswer || user.securityAnswer;
@@ -132,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!isMasterQuestion || !isMasterAnswer) {
         return res.status(403).json({
-          message: "Invalid Security Verification. For sensitive changes, you must select 'What was your first pet's name?' and set the answer to 'hamza'."
+          message: "Security verification failed. Please provide the correct security answer to authorize sensitive changes."
         });
       }
     }
