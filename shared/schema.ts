@@ -189,6 +189,7 @@ export const siteSettings = pgTable("site_settings", {
   footerServices: text("footer_services").notNull().default('["Cybersecurity Services","Cloud Engineering","UI/UX Design","Data Analysis & AI","Mobile Development","Network Engineering"]'),
   footerQuickLinks: text("footer_quick_links").notNull().default('[{"name":"Home","href":"#home"},{"name":"Skills","href":"#skills"},{"name":"Projects","href":"#projects"},{"name":"Contact","href":"#contact"}]'),
   footerCopyright: text("footer_copyright").notNull().default("© 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide."),
+  resumeUrl: text("resume_url").notNull().default(""),
 });
 
 export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({

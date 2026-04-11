@@ -107,7 +107,8 @@ export class DatabaseStorage implements IStorage {
         { name: 'footer_services', type: 'text', defaultValue: '\'["Cybersecurity Services","Cloud Engineering","UI/UX Design","Data Analysis & AI","Mobile Development","Network Engineering"]\'' },
         { name: 'footer_quick_links', type: 'text', defaultValue: '\'[{"name":"Home","href":"#home"},{"name":"Skills","href":"#skills"},{"name":"Projects","href":"#projects"},{"name":"Contact","href":"#contact"}]\' ' },
         { name: 'footer_copyright', type: 'text', defaultValue: "'© 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide.'" },
-        { name: 'whatsapp_number', type: 'text', defaultValue: "'03325909163'" }
+        { name: 'whatsapp_number', type: 'text', defaultValue: "'03325909163'" },
+        { name: 'resume_url', type: 'text', defaultValue: "''" }
       ];
 
       for (const col of columnsToAdd) {
@@ -190,6 +191,7 @@ export class DatabaseStorage implements IStorage {
           footerServices: '["Cybersecurity Services","Cloud Engineering","UI/UX Design","Data Analysis & AI","Mobile Development","Network Engineering"]',
           footerQuickLinks: '[{"name":"Home","href":"#home"},{"name":"Skills","href":"#skills"},{"name":"Projects","href":"#projects"},{"name":"Contact","href":"#contact"}]',
           footerCopyright: "© 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide.",
+          resumeUrl: "",
         });
         console.log("Initial site settings seeded.");
       }
@@ -226,6 +228,7 @@ export class DatabaseStorage implements IStorage {
         footerServices: '["Cybersecurity Services","Cloud Engineering","UI/UX Design","Data Analysis & AI","Mobile Development","Network Engineering"]',
         footerQuickLinks: '[{"name":"Home","href":"#home"},{"name":"Skills","href":"#skills"},{"name":"Projects","href":"#projects"},{"name":"Contact","href":"#contact"}]',
         footerCopyright: "© 2024 CyberSec Professional. All rights reserved. | Securing digital assets worldwide.",
+        resumeUrl: "",
       };
     }
     return settings;

@@ -14,6 +14,7 @@ import { Loader2, Save, Globe, User, Share2, Info, Layout } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import ImageUpload from "@/components/image-upload";
+import FileUpload from "@/components/file-upload";
 
 export default function AdminSettings() {
     const { toast } = useToast();
@@ -46,6 +47,7 @@ export default function AdminSettings() {
             footerDescription: "",
             footerServices: '["Cybersecurity Services","Cloud Engineering","UI/UX Design","Data Analysis & AI","Mobile Development","Network Engineering"]',
             footerCopyright: "",
+            resumeUrl: "",
         },
     });
 
@@ -294,6 +296,24 @@ export default function AdminSettings() {
                                                             <FormLabel>Projects</FormLabel>
                                                             <FormControl>
                                                                 <Input placeholder="50+" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="resumeUrl"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Resume / CV File (PDF)</FormLabel>
+                                                            <FormControl>
+                                                                <FileUpload
+                                                                    value={field.value}
+                                                                    onChange={field.onChange}
+                                                                    label="Resume File"
+                                                                    accept=".pdf,.doc,.docx"
+                                                                />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>

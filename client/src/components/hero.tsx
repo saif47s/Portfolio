@@ -77,13 +77,8 @@ export default function Hero() {
           <Button
             className="bg-gradient-cyber-primary hover:opacity-90 text-white font-bold py-3 px-8 text-lg shadow-lg shadow-cyber-blue/20"
             onClick={() => {
-              const resumeUrl = "/resume-saif-tech-expert.pdf";
-              const link = document.createElement('a');
-              link.href = resumeUrl;
-              link.download = "Resume.pdf";
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
+              const resumeUrl = settings?.resumeUrl || "/resume-saif-tech-expert.pdf";
+              window.open(resumeUrl, "_blank");
             }}
           >
             <Download className="mr-2 h-5 w-5" />

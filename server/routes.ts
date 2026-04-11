@@ -55,13 +55,13 @@ const upload = multer({
   storage: uploadStorage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|webp|gif/;
+    const allowedTypes = /jpeg|jpg|png|webp|gif|pdf|doc|docx/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
     if (extname && mimetype) {
       return cb(null, true);
     }
-    cb(new Error("Only images are allowed (jpeg, jpg, png, webp, gif)"));
+    cb(new Error("Only images and documents are allowed (jpeg, jpg, png, webp, gif, pdf, doc, docx)"));
   }
 });
 
@@ -77,6 +77,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const cld_upload_stream = cloudinary.uploader.upload_stream(
       {
         folder: "portfolio",
+        resource_type: "auto",
       },
       (error: any, result: any) => {
         if (result) {
