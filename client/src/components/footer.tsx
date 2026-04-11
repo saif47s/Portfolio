@@ -137,7 +137,7 @@ export default function Footer() {
             <img 
               src="/saif_logo.png" 
               alt="Saif Logo" 
-              className="w-7 h-7 object-contain opacity-80 hover:opacity-100 transition-opacity"
+              className="w-[30px] h-[30px] object-contain opacity-80 hover:opacity-100 transition-opacity"
             />
           </div>
         </div>
