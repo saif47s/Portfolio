@@ -74,10 +74,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
+    const isImage = req.file.mimetype.startsWith('image/');
     const cld_upload_stream = cloudinary.uploader.upload_stream(
       {
         folder: "portfolio",
-        resource_type: "auto",
+        resource_type: isImage ? "image" : "raw",
       },
       (error: any, result: any) => {
         if (result) {
